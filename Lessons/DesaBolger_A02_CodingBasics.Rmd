@@ -31,26 +31,26 @@ This exercise accompanies the lessons in Environmental Data Analytics on coding 
 4.  Insert comments in your code to describe what you are doing.
 
 ```{r basics 1}
-#1. 
+#1. I am creating a sequence from 1 to 30, skipping by 3s
 seqThree <- seq(1, 30, 3)
 seqThree
 
-#2. 
+#2. I am taking the mean and median of seqThree
 mean(seqThree)
 median(seqThree)
 #3. 
 {
-  if(mean(seqThree) > median(seqThree)) 
+  if(mean(seqThree) > median(seqThree)) #Comparing Mean and Median
     {
-    print("mean is bigger")
+    print("Mean is bigger") #Printing the larger value
     } 
-  else if (mean(seqThree) < median(seqThree)) 
+  else if (mean(seqThree) < median(seqThree)) #Comparing Mean and Median
     {
-    print("median is bigger")
+    print("Median is bigger") #Printing the larger value
     }
   else 
     {
-    print("mean is equal to median")
+    print("Mean is equal to median") #Only option left is that they are equal
     }
 }
 
@@ -67,21 +67,52 @@ median(seqThree)
 8.  Label the columns of your data frame with informative titles.
 
 ```{r basics 2}
+#5 and 6.
+names <- c("Desa", "Fiona", "Ayoung", "Nusrat", "Emma") #Character
+scores <- c(20, 40, 60, 80, 100) #Integer
+passed <- c(FALSE, FALSE, TRUE, TRUE, TRUE) #Logical
 
+#7.
+
+ScoresDf <- cbind(names,scores,passed)
+df_Scores <- as.data.frame(ScoresDf)
+df_Scores
+class(df_Scores)
+is.data.frame(df_Scores) 
+df_Scores
+
+#8. 
+
+colnames(df_Scores) <- c("Name of Students","Percentage","Passed?")
+df_Scores
 ```
 
 9.  QUESTION: How is this data frame different from a matrix?
 
-> Answer:
+> Answer: 
 
-10. Create a function with an if/else statement. Your function should take a **vector** of test scores and print (not return) whether a given test score is a passing grade of 50 or above (TRUE or FALSE). You will need to choose either the `if` and `else` statements or the `ifelse` statement. 
+10. Create a function with an if/else statement. Your function should take a **vector** of test scores and print (not return) whether a given test score is a passing grade of 50 or above (TRUE or FALSE). You will need to choose either the `if` and `else` statements or the `ifelse` statement.
 
 11. Apply your function to the vector with test scores that you created in number 5.
 
 ```{r basics 3}
 
+#9.
+
+#10.
+
+#11.
+
+
+recipe1 <- function(x){
+  mix <- x*2
+  return(mix)
+}
+
+
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> Answer:
+> Answer: 
