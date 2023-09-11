@@ -32,10 +32,27 @@ This exercise accompanies the lessons in Environmental Data Analytics on coding 
 
 ```{r basics 1}
 #1. 
+seqThree <- seq(1, 30, 3)
+seqThree
 
 #2. 
-
+mean(seqThree)
+median(seqThree)
 #3. 
+{
+  if(mean(seqThree) > median(seqThree)) 
+    {
+    print("mean is bigger")
+    } 
+  else if (mean(seqThree) < median(seqThree)) 
+    {
+    print("median is bigger")
+    }
+  else 
+    {
+    print("mean is equal to median")
+    }
+}
 
 ```
 

@@ -22,6 +22,8 @@ Let's look into a built-in data frame from package "datasets" - cars. The data g
 
 ```{r cars}
 cars
+mtcars
+
 ```
 
 Note that it has 2 columns and 50 rows.
@@ -32,6 +34,7 @@ Suppose you want just the column speed. How would you access that data?
 
 ```{r}
 cars$speed
+mtcars$cyl
 ```
 
 How would you store it on another object?
@@ -39,6 +42,9 @@ How would you store it on another object?
 ```{r}
 car_speed <- cars$speed
 car_speed
+
+mt_cyl <- mtcars$cyl
+mtcars$cyl
 ```
 
 ## Transforming object in a data frame
