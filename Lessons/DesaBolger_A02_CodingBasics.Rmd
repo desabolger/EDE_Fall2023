@@ -68,17 +68,16 @@ median(seqThree)
 
 ```{r basics 2}
 #5 and 6.
-names <- c("Desa", "Fiona", "Ayoung", "Nusrat", "Emma") #Character
-scores <- c(20, 40, 60, 80, 100) #Integer
-passed <- c(FALSE, FALSE, TRUE, TRUE, TRUE) #Logical
+names <- c("Desa", "Ayoung", "Nusrat", "Emma") #Character
+scores <- c(20, 60, 80, 100) #Integer
+passed <- c(FALSE, TRUE, TRUE, TRUE) #Logical
 
 #7.
 
 ScoresDf <- cbind(names,scores,passed)
 df_Scores <- as.data.frame(ScoresDf)
 df_Scores
-class(df_Scores)
-is.data.frame(df_Scores) 
+is.data.frame(df_Scores) #confirming it is a data frame
 df_Scores
 
 #8. 
@@ -101,21 +100,26 @@ df_Scores
 
 #10.
 
-AreYouPassing <- function(dataFrame)
+AreYouPassing <- function(v)
   {
-  ifelse(dataFrame$Percentage >= 50,"TRUE","FALSE")
-}
+  ifelse(v>= 50,"TRUE","FALSE")
+  }
+
+AreYouPassing(80) #test
+AreYouPassing(50) #test
+AreYouPassing(scores) #test
+
 
 #11.
 
-AreYouPassing(df_Scores)
-df_Scores
+AreYouPassing(scores)
+scores #to compare outputs above
 
 
-
+#needed in general, not this question
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> Answer: ifelse worked because it is for a data frame. 
+> Answer: ifelse worked because if you input vectors, you get vectors back.
