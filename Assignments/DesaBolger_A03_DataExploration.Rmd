@@ -32,8 +32,31 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 
 1.  Check your working directory, load necessary packages (tidyverse, lubridate), and upload two datasets: the ECOTOX neonicotinoid dataset (ECOTOX_Neonicotinoids_Insects_raw.csv) and the Niwot Ridge NEON dataset for litter and woody debris (NEON_NIWO_Litter_massdata_2018-08_raw.csv). Name these datasets "Neonics" and "Litter", respectively. Be sure to include the subcommand to read strings in as factors.
 
-```{r,  message = FALSE}
+```{r Setting up the basics + answering Question 1!!,  message = FALSE}
 
+getwd() #checking WD
+knitr::opts_chunk$set(echo = TRUE) #knitting, lubridate, and tidyverse, here, ggplot2 download
+library(lubridate)
+library(tidyverse)
+library(here)
+library(ggplot2)
+setwd(here())
+
+#uploading two datasets
+NeonicsFile <- here('Data','Raw','ECOTOX_Neonicotinoids_Insects_raw.csv')
+print(NeonicsFile)
+Neonics <- read.csv(
+  file = here('Data','Raw','ECOTOX_Neonicotinoids_Insects_raw.csv'),
+  stringsAsFactors = T)
+Neonics
+view(Neonics)
+
+LitterFile <- here('Data','Raw','NEON_NIWO_Litter_massdata_2018-08_raw.csv')
+print(LitterFile)
+Litter <- read.csv(
+  file = here('Data','Raw','NEON_NIWO_Litter_massdata_2018-08_raw.csv'),
+  stringsAsFactors = T)
+view(Litter)
 ```
 
 ## Learn about your system
@@ -57,47 +80,73 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 
 5.  What are the dimensions of the dataset?
 
-```{r}
+```{r Neonics Dimensions}
+dim(Neonics)
 
+#4623 by 30
 ```
 
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest?
 
-```{r}
+```{r Neonics Summary (Effects)}
+summary(Neonics$Effect)
 
+#Top 5: Population (1803), Mortality (1493), Behavior (360), Feeding behavior (255), Reproduction (197)
+
+#ANSWER: ADD HERE
 ```
 
-> Answer:
-
+> Answer: Top 5: Population (1803), Mortality (1493), Behavior (360), Feeding behavior (255), Reproduction (197)
+>  Second answer + fix spacing. 
 
 7.  Using the `summary` function, determine the six most commonly studied species in the dataset (common name). What do these species have in common, and why might they be of interest over other insects? Feel free to do a brief internet search for more information if needed.[TIP: The `sort()` command can sort the output of the summary command...]
 
-```{r}
+```{r Neonics Summary}
+summary(Neonics$Species.Common.Name)
 
+#They are all bees/wasps! Other (670), Honey Bee (667), Parasitic Wasp (285), Buff Tailed Bumblebee (183), Carniolan Honey Bee (152), Bumble Bee (140).
+
+#Reason!! They are all uncategorized or some sort of Bee/Wasp
+
+
+insect <- sort(summary(Neonics$Species.Common.Name), decreasing = TRUE)
+insect
 ```
 
 > Answer:
 
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric?
 
-```{r}
+```{r Conc.1..Author note}
 
+#It is a factor because some of the numbers have slashes at the end, so they can't
+#be classified specifically as a number or not
 ```
 
-> Answer:
+> Answer: #It is a factor because some of the numbers have slashes at the end, so they can't
+#be classified specifically as a number or not
 
 ## Explore your data graphically (Neonics)
 
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
-```{r}
+```{r geom_freqpoly}
+
+ggplot(Neonics,
+       aes(x = Publication.Year))+
+      geom_freqpoly(bins = 50)+
+  scale_x_continuous(limits = c(0,10))
 
 ```
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
-```{r}
+```{r geom_freqpoly x color}
 
+ggplot(Neonics,
+       aes(x = Publication.Year, fill = Test.Location))+
+      geom_freqpoly(bins = 50)+
+  scale_x_continuous(limits = c(0,10))
 ```
 
 Interpret this graph. What are the most common test locations, and do they differ over time?
@@ -108,7 +157,12 @@ Interpret this graph. What are the most common test locations, and do they diffe
 
 [**TIP**: Add `theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))` to the end of your plot command to rotate and align the X-axis labels...]
 
-```{r}
+```{r Bar graph}
+
+ggplot(Neonics,
+       aes(x = Endpoint))+
+      geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 ```
 
@@ -118,27 +172,51 @@ Interpret this graph. What are the most common test locations, and do they diffe
 
 12. Determine the class of collectDate. Is it a date? If not, change to a date and confirm the new class of the variable. Using the `unique` function, determine which dates litter was sampled in August 2018.
 
-```{r}
+```{r Changing Dates!}
+
+#Collection Date is a factor, not a date.
+
+class(Litter$collectDate)
+#it is a factor, not a date. 
+
+Round2 <- unique(Litter$collectDate)
+Round2
+
+#August 2 and Aug 30 are sampling dates
+
+#year month day conversion below
+
+Litter$collectDate <- as.Date(Litter$collectDate, format = "%Y-%m-%d")
+class(Litter$collectDate)
+
 
 ```
 
 13. Using the `unique` function, determine how many plots were sampled at Niwot Ridge. How is the information obtained from `unique` different from that obtained from `summary`?
 
-```{r}
+```{r FILL IN}
+summary(Litter$siteID)
+Special <- unique(Litter$siteID)
+Special
+
+#Summary says there was 188 samples. Unique just tells me the different types
+#of samples, which is only one, so it is not helpful in this case. 
 
 ```
 
-> Answer:
+> Answer: #Summary says there was 188 samples. Unique just tells me the different types
+#of samples, which is only one, so it is not helpful in this case. 
+
 
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 
-```{r}
+```{r FILL IN}
 
 ```
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
 
-```{r}
+```{r FILL IN}
 
 ```
 
