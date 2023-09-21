@@ -159,11 +159,11 @@ Interpret this graph. What are the most common test locations, and do they diffe
 
 ```{r Bar graph}
 
-ggplot(Neonics,
+ graph1 <- ggplot(Neonics,
        aes(x = Endpoint))+
-      geom_bar()+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-
+      geom_bar()
+  #theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+print(graph1)
 ```
 
 > Answer:
@@ -210,13 +210,13 @@ Special
 
 14. Create a bar graph of functionalGroup counts. This shows you what type of litter is collected at the Niwot Ridge sites. Notice that litter types are fairly equally distributed across the Niwot Ridge sites.
 
-```{r FILL IN}
+```{r functional groups counts}
 
 ```
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
 
-```{r FILL IN}
+```{r boxplot and violin}
 
 ```
 
