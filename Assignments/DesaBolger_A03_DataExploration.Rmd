@@ -32,7 +32,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Ex
 
 1.  Check your working directory, load necessary packages (tidyverse, lubridate), and upload two datasets: the ECOTOX neonicotinoid dataset (ECOTOX_Neonicotinoids_Insects_raw.csv) and the Niwot Ridge NEON dataset for litter and woody debris (NEON_NIWO_Litter_massdata_2018-08_raw.csv). Name these datasets "Neonics" and "Litter", respectively. Be sure to include the subcommand to read strings in as factors.
 
-```{r Setting up the basics + answering Question 1!!,  message = FALSE}
+```{r Setting up the basics and answering Question 1,  message = FALSE}
 
 getwd() #checking WD
 knitr::opts_chunk$set(echo = TRUE) #knitting, lubridate, and tidyverse, here, ggplot2 download
@@ -48,15 +48,15 @@ print(NeonicsFile)
 Neonics <- read.csv(
   file = here('Data','Raw','ECOTOX_Neonicotinoids_Insects_raw.csv'),
   stringsAsFactors = T)
-Neonics
-view(Neonics)
+
+
 
 LitterFile <- here('Data','Raw','NEON_NIWO_Litter_massdata_2018-08_raw.csv')
 print(LitterFile)
 Litter <- read.csv(
   file = here('Data','Raw','NEON_NIWO_Litter_massdata_2018-08_raw.csv'),
   stringsAsFactors = T)
-view(Litter)
+
 ```
 
 ## Learn about your system
@@ -88,7 +88,7 @@ dim(Neonics) #get dimensions
 
 6.  Using the `summary` function on the "Effect" column, determine the most common effects that are studied. Why might these effects specifically be of interest?
 
-```{r Neonics Summary (Effects)}
+```{r Neonics Summary Effects}
 summary(Neonics$Effect)
 
 #Top 5: Population (1803), Mortality (1493), Behavior (360), Feeding behavior (255), Reproduction (197)
@@ -104,9 +104,13 @@ summary(Neonics$Effect)
 ```{r Neonics Summary}
 summary(Neonics$Species.Common.Name)
 
-#They are all bees/wasps! Other (670), Honey Bee (667), Parasitic Wasp (285), Buff Tailed Bumblebee (183), Carniolan Honey Bee (152), Bumble Bee (140), Italian Honeybee (113)
+#They are all bees/wasps! Other (670), Honey Bee (667), Parasitic Wasp (285), 
+#Buff Tailed Bumblebee (183), Carniolan Honey Bee (152), Bumble Bee (140), 
+#Italian Honeybee (113)
 
-#They are all uncategorized or some sort of Bee/Wasp.  These may be of interest because they are less likely to be the main targets of the insecticides-- perhaps studies are checking to see if there are unintended consequences to these species. 
+#They are all uncategorized or some sort of Bee/Wasp.  These may be of interest 
+#because they are less likely to be the main targets of the insecticides-- 
+#perhaps studies are checking to see if there are unintended consequences to these species. 
 
 
 insect <- sort(summary(Neonics$Species.Common.Name), decreasing = TRUE)
@@ -119,20 +123,22 @@ insect
 
 8.  Concentrations are always a numeric value. What is the class of `Conc.1..Author.` column in the dataset, and why is it not numeric?
 
-```{r Conc.1..Author note}
+```{r Conc 1 Author note}
 
 class(Neonics$Conc.1..Author)
-#It is a factor because some of the numbers have slashes at the end/ other various symbols, so they can't
+#It is a factor because some of the numbers have slashes at the end/ other 
+#various symbols, so they can't
 #be classified specifically as a number or not
 ```
 
-> Answer: It is a factor because some of the numbers have slashes at the end/ other various symbols, so they can't be classified specifically as a number or not
+> Answer: It is a factor because some of the numbers have slashes at the end/ other various symbols,
+so they can't be classified specifically as a number or not
 
 ## Explore your data graphically (Neonics)
 
 9.  Using `geom_freqpoly`, generate a plot of the number of studies conducted by publication year.
 
-```{r geom_freqpoly}
+```{r geom freqpoly}
 
 ggplot(Neonics,
        aes(x = Publication.Year))+
@@ -144,7 +150,7 @@ ggplot(Neonics,
 
 10. Reproduce the same graph but now add a color aesthetic so that different Test.Location are displayed as different colors.
 
-```{r geom_freqpoly x color}
+```{r geom freqpoly x color}
 
 ggplot(Neonics,
        aes(x = Publication.Year, color = Test.Location))+ #change color by test location
@@ -176,7 +182,7 @@ ggplot(Neonics,
 
 12. Determine the class of collectDate. Is it a date? If not, change to a date and confirm the new class of the variable. Using the `unique` function, determine which dates litter was sampled in August 2018.
 
-```{r Changing Dates!}
+```{r Changing Dates}
 
 #Collection Date is a factor, not a date.
 
@@ -216,21 +222,25 @@ Special
 ggplot(Litter,
        aes(x = functionalGroup))+
       geom_bar()+ #bar graph
-  theme_bw()
+theme(axis.text.x =element_text(angle = 90, vjust = 0.5, hjust=1))
 ```
 
 15. Using `geom_boxplot` and `geom_violin`, create a boxplot and a violin plot of dryMass by functionalGroup.
 
 ```{r boxplot and violin}
 ggplot(Litter,
-       aes(x= dryMass, y = functionalGroup))+
+       aes(y= dryMass, x = functionalGroup))+
       geom_boxplot()+ #boxplot
-  theme_bw()
+  theme(axis.text.x =element_text(angle = 90, vjust = 0.5, hjust=1))
+
+
 
 ggplot(Litter,
-       aes(x= dryMass, y = functionalGroup))+
+       aes(y= dryMass, x = functionalGroup))+
       geom_violin()+ #violin
-  theme_bw()
+  theme(axis.text.x =element_text(angle = 90, vjust = 0.5, hjust=1))
+
+
 ```
 
 Why is the boxplot a more effective visualization option than the violin plot in this case?
