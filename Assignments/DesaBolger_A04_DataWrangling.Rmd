@@ -35,9 +35,6 @@ The completed exercise is due on Thursday, Sept 28th @ 5:00pm.
 library(tidyverse)
 library(lubridate)
 library(here)
-
-#1b 
-getwd()
 ```
 
 
@@ -48,13 +45,13 @@ getwd() #now its EDE_Fall2023
 
 #1c
 EPA.PM25.2019.data <- read.csv("./Data/Raw/EPAair_PM25_NC2019_raw.csv", stringsAsFactors = TRUE)
-view(EPA.PM25.2019.data)
+#view(EPA.PM25.2019.data)
 EPA.PM25.2018.data <- read.csv("./Data/Raw/EPAair_PM25_NC2018_raw.csv", stringsAsFactors = TRUE)
-view(EPA.PM25.2018.data)
+#view(EPA.PM25.2018.data)
 EPA.03.2019.data <- read.csv("./Data/Raw/EPAair_O3_NC2019_raw.csv", stringsAsFactors = TRUE)
-view(EPA.03.2019.data)
+#view(EPA.03.2019.data)
 EPA.03.2018.data <- read.csv("./Data/Raw/EPAair_O3_NC2018_raw.csv", stringsAsFactors = TRUE)
-view(EPA.03.2018.data)
+#view(EPA.03.2018.data)
 
 #2 
 
@@ -83,32 +80,52 @@ glimpse(EPA.03.2018.data)
 class(EPA.PM25.2019.data$Date) #01/03/2019
 # a factor! we will switch it
 EPA.PM25.2019.data$Date <- as.Date(EPA.PM25.2019.data$Date, format = "%m/%d/%Y")
-view(EPA.PM25.2019.data)
+#view(EPA.PM25.2019.data)
 class(EPA.PM25.2019.data$Date) #now its a date!
 
 class(EPA.PM25.2018.data$Date) #03/01/2018
 # a factor! we will switch it
 EPA.PM25.2018.data$Date <- as.Date(EPA.PM25.2018.data$Date, format = "%m/%d/%Y")
-view(EPA.PM25.2018.data)
+#view(EPA.PM25.2018.data)
 class(EPA.PM25.2018.data$Date) #now its a date!
 
 class(EPA.03.2019.data$Date) #01/01/2019
 # a factor! we will switch it
 EPA.03.2019.data$Date <- as.Date(EPA.03.2019.data$Date, format = "%m/%d/%Y")
-view(EPA.03.2019.data)
+#view(EPA.03.2019.data)
 class(EPA.03.2019.data$Date) #now its a date!
 
 class(EPA.03.2018.data$Date) #03/01/2018
 # a factor! we will switch it
 EPA.03.2018.data$Date <- as.Date(EPA.03.2018.data$Date, format = "%m/%d/%Y")
-view(EPA.03.2018.data)
+#view(EPA.03.2018.data)
 class(EPA.03.2018.data$Date) #now its a date!
 
 #4
 
-#5
+smaller_EPA.PM25.2019.data <- select(EPA.PM25.2019.data, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+view(smaller_EPA.PM25.2019.data)
+
+smaller_EPA.PM25.2018.data <- select(EPA.PM25.2018.data, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+view(smaller_EPA.PM25.2018.data)
+
+
+smaller_EPA.03.2019.data <- select(EPA.03.2019.data, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+view(smaller_EPA.03.2019.data )
+
+smaller_EPA.03.2018.data <- select(EPA.03.2018.data, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+view(smaller_EPA.03.2018.data)
+
+#5. For the PM2.5 datasets, fill all cells in AQS_PARAMETER_DESC with "PM2.5" (all cells in this column should be identical). #STUCK HERE
+
 
 #6
+
+write.csv(smaller_EPA.PM25.2019.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_PM25_2019.csv")
+write.csv(smaller_EPA.PM25.2018.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_PM25_2018.csv")
+write.csv(smaller_EPA.03.2019.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_03_2019_data.csv")
+write.csv(smaller_EPA.03.2018.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_03_2018_data.csv")
+
 
 ```
 
