@@ -32,13 +32,38 @@ The completed exercise is due on Thursday, Sept 28th @ 5:00pm.
 
 ```{r setup, message = FALSE}
 #1a 
+library(tidyverse)
+library(lubridate)
+library(here)
 
 #1b 
+getwd()
+```
 
-#1c 
+
+```{r setup, message = FALSE}
+#1b 
+setwd('/home/guest/EDE_Fall2023')
+getwd() #now its EDE_Fall2023
+
+#1c
+EPA.PM25.2019.data <- read.csv("./Data/Raw/EPAair_PM25_NC2019_raw.csv", stringsAsFactors = TRUE)
+view(EPA.PM25.2019.data)
+EPA.PM25.2018.data <- read.csv("./Data/Raw/EPAair_PM25_NC2018_raw.csv", stringsAsFactors = TRUE)
+view(EPA.PM25.2018.data)
+EPA.03.2019.data <- read.csv("./Data/Raw/EPAair_O3_NC2019_raw.csv", stringsAsFactors = TRUE)
+view(EPA.03.2019.data)
+EPA.03.2018.data <- read.csv("./Data/Raw/EPAair_O3_NC2018_raw.csv", stringsAsFactors = TRUE)
+view(EPA.03.2018.data)
 
 #2 
 
+glimpse(EPA.PM25.2019.data)
+glimpse(EPA.PM25.2018.data)
+glimpse(EPA.03.2019.data)
+glimpse(EPA.03.2018.data)
+
+#have the info now!
 ```
 
 
@@ -54,6 +79,30 @@ The completed exercise is due on Thursday, Sept 28th @ 5:00pm.
 
 ```{r}
 #3
+
+class(EPA.PM25.2019.data$Date) #01/03/2019
+# a factor! we will switch it
+EPA.PM25.2019.data$Date <- as.Date(EPA.PM25.2019.data$Date, format = "%m/%d/%Y")
+view(EPA.PM25.2019.data)
+class(EPA.PM25.2019.data$Date) #now its a date!
+
+class(EPA.PM25.2018.data$Date) #03/01/2018
+# a factor! we will switch it
+EPA.PM25.2018.data$Date <- as.Date(EPA.PM25.2018.data$Date, format = "%m/%d/%Y")
+view(EPA.PM25.2018.data)
+class(EPA.PM25.2018.data$Date) #now its a date!
+
+class(EPA.03.2019.data$Date) #01/01/2019
+# a factor! we will switch it
+EPA.03.2019.data$Date <- as.Date(EPA.03.2019.data$Date, format = "%m/%d/%Y")
+view(EPA.03.2019.data)
+class(EPA.03.2019.data$Date) #now its a date!
+
+class(EPA.03.2018.data$Date) #03/01/2018
+# a factor! we will switch it
+EPA.03.2018.data$Date <- as.Date(EPA.03.2018.data$Date, format = "%m/%d/%Y")
+view(EPA.03.2018.data)
+class(EPA.03.2018.data$Date) #now its a date!
 
 #4
 
