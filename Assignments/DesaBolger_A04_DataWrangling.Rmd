@@ -1,6 +1,6 @@
 ---
 title: "Assignment 4: Data Wrangling"
-author: "Student Name"
+author: "Desa Bolger"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -11,7 +11,7 @@ This exercise accompanies the lessons in Environmental Data Analytics on Data Wr
 
 ## Directions
 
-1. Rename this file `<FirstLast>_A04_DataWrangling.Rmd` (replacing `<FirstLast>` with your first and last name).
+1. Rename this file `DesaBolger_A04_DataWrangling.Rmd` (replacing `<FirstLast>` with your first and last name).
 2. Change "Student Name" on line 3 (above) with your name.
 3. Work through the steps, **creating code and output** that fulfill each instruction.
 4. Be sure to **answer the questions** in this assignment document.
