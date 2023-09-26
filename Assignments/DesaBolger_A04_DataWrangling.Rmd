@@ -112,18 +112,18 @@ smaller_EPA.03.2019.data <- select(EPA.03.2019.data, Date, DAILY_AQI_VALUE, Site
 smaller_EPA.03.2018.data <- select(EPA.03.2018.data, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 #view(smaller_EPA.03.2018.data)
 
-#5. For the PM2.5 datasets, fill all cells in AQS_PARAMETER_DESC with "PM2.5" (all cells in this column should be identical). #STUCK HERE
+#5. For the PM2.5 datasets, fill all cells in AQS_PARAMETER_DESC with "PM2.5" (all cells in this column should be identical).
 
-smaller_EPA.03.2018.data$AQS_PARAMETER_DESC <- "PM2.5"
-smaller_EPA.03.2019.data$AQS_PARAMETER_DESC <- "PM2.5"
+smaller_EPA.PM25.2018.data$AQS_PARAMETER_DESC <- "PM2.5"
+smaller_EPA.PM25.2019.data$AQS_PARAMETER_DESC <- "PM2.5"
 
 
 #6
 
-#write.csv(smaller_EPA.PM25.2019.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_PM25_2019.csv")
-#write.csv(smaller_EPA.PM25.2018.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_PM25_2018.csv")
-#write.csv(smaller_EPA.03.2019.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_03_2019_data.csv")
-#write.csv(smaller_EPA.03.2018.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_03_2018_data.csv")
+write.csv(smaller_EPA.PM25.2019.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_PM25_2019.csv")
+write.csv(smaller_EPA.PM25.2018.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_PM25_2018.csv")
+write.csv(smaller_EPA.03.2019.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_03_2019_data.csv")
+write.csv(smaller_EPA.03.2018.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_03_2018_data.csv")
 
 
 ```
