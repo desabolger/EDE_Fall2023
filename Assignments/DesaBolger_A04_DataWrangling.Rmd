@@ -102,7 +102,7 @@ class(EPA.03.2018.data$Date) #now its a date!
 
 smaller_EPA.PM25.2019.data <- select(EPA.PM25.2019.data, Date, DAILY_AQI_VALUE, 
 Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
-view(smaller_EPA.PM25.2019.data)
+#view(smaller_EPA.PM25.2019.data)
 
 smaller_EPA.PM25.2018.data <- select(EPA.PM25.2018.data, Date, DAILY_AQI_VALUE, 
 Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
@@ -162,7 +162,7 @@ write.csv(smaller_EPA.03.2018.data, row.names = FALSE,
 
 CompleteList <- rbind(smaller_EPA.PM25.2019.data, smaller_EPA.PM25.2018.data, 
                       smaller_EPA.03.2019.data, smaller_EPA.03.2018.data)
-view(CompleteList)
+#view(CompleteList)
 #That works- they are all in one data frame now. 
 
 #8  "should it be months or numbers?
@@ -179,7 +179,7 @@ EPA.data.processed <-
   group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>%
   summarise(meanAQI = mean(DAILY_AQI_VALUE), 
             meanLatitude = mean(SITE_LATITUDE), 
-            meanLongitude = mean(SITE_LONGITUDE)) %>% #STD DEV?
+            meanLongitude = mean(SITE_LONGITUDE)) %>% 
   mutate("Month" = month(Date)) %>%
   mutate("Year" = year(Date))
 
@@ -187,18 +187,18 @@ dim(EPA.data.processed) #Its 14752 x 9!
 
 #9 #should it be the data sheet I've been working on or should I name it something diffferent?
 
-EPA.data.processed <- pivot_wider(EPA.data.processed, names_from = 
+EPA.data.processedDone <- pivot_wider(EPA.data.processed, names_from = 
 AQS_PARAMETER_DESC, values_from = meanAQI)
-#view(EPA.data.processed)
+#view(EPA.data.processedDone)
 
 #10
 
-dim(EPA.data.processed)
-#8976 x 9 dimensions
+dim(EPA.data.processedDone)
+#8976 x 9 
 
 #11 Processing
 
-write.csv(smaller_EPA.PM25.2019.data, row.names = FALSE, file = "./Data/Processed/EPAair_O3_PM25_NC1819_Processed.csv")
+write.csv(smaller_EPA.PM25.2019.data, row.names = FALSE, file = "./Data/Processed/EPAair_O3_PM25_NC1819_ProcessedDone.csv")
 ```
 
 
@@ -215,15 +215,13 @@ write.csv(smaller_EPA.PM25.2019.data, row.names = FALSE, file = "./Data/Processe
 EPA.summaries <- 
   EPA.data.processed %>%
   group_by(Site.Name, Month, Year) %>% 
-  summarise(meanOzone = mean(Ozone), #with SD?
-            sdOzone = sd(Ozone), 
-            meanPM = mean(PM2.5), 
-            sdPM = sd(PM2.5)) 
+  summarise(meanOzone = mean(Ozone), 
+            meanPM = mean(PM2.5)), 
 
 EPA.Summary <-
   EPA.summaries %>%
   drop_na(meanOzone)
-view(EPA.Summary)
+#view(EPA.Summary)
 
 #13
 
@@ -234,4 +232,4 @@ dim(EPA.Summary)
 
 14. Why did we use the function `drop_na` rather than `na.omit`?
 
-> Answer: BETTER ANSWER??? na.omit() gets rid of the NAs for PM data as well.
+> Answer: na.omit() gets rid of the NAs for PM data as well.
