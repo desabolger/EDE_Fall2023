@@ -216,7 +216,7 @@ EPA.summaries <-
   EPA.data.processed %>%
   group_by(Site.Name, Month, Year) %>% 
   summarise(meanOzone = mean(Ozone), 
-            meanPM = mean(PM2.5)), 
+            meanPM = mean(PM2.5)) 
 
 EPA.Summary <-
   EPA.summaries %>%
