@@ -100,19 +100,23 @@ class(EPA.03.2018.data$Date) #now its a date!
 
 #4
 
-smaller_EPA.PM25.2019.data <- select(EPA.PM25.2019.data, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
-#view(smaller_EPA.PM25.2019.data)
+smaller_EPA.PM25.2019.data <- select(EPA.PM25.2019.data, Date, DAILY_AQI_VALUE, 
+Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+view(smaller_EPA.PM25.2019.data)
 
-smaller_EPA.PM25.2018.data <- select(EPA.PM25.2018.data, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+smaller_EPA.PM25.2018.data <- select(EPA.PM25.2018.data, Date, DAILY_AQI_VALUE, 
+Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 #view(smaller_EPA.PM25.2018.data)
 
-smaller_EPA.03.2019.data <- select(EPA.03.2019.data, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+smaller_EPA.03.2019.data <- select(EPA.03.2019.data, Date, DAILY_AQI_VALUE, 
+Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 #view(smaller_EPA.03.2019.data )
 
-smaller_EPA.03.2018.data <- select(EPA.03.2018.data, Date, DAILY_AQI_VALUE, Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
+smaller_EPA.03.2018.data <- select(EPA.03.2018.data, Date, DAILY_AQI_VALUE, 
+Site.Name, AQS_PARAMETER_DESC, COUNTY, SITE_LATITUDE, SITE_LONGITUDE)
 #view(smaller_EPA.03.2018.data)
 
-#5. For the PM2.5 datasets, fill all cells in AQS_PARAMETER_DESC with "PM2.5" (all cells in this column should be identical).
+#5.
 
 smaller_EPA.PM25.2018.data$AQS_PARAMETER_DESC <- "PM2.5"
 smaller_EPA.PM25.2019.data$AQS_PARAMETER_DESC <- "PM2.5"
@@ -120,10 +124,14 @@ smaller_EPA.PM25.2019.data$AQS_PARAMETER_DESC <- "PM2.5"
 
 #6
 
-write.csv(smaller_EPA.PM25.2019.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_PM25_2019.csv")
-write.csv(smaller_EPA.PM25.2018.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_PM25_2018.csv")
-write.csv(smaller_EPA.03.2019.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_03_2019_data.csv")
-write.csv(smaller_EPA.03.2018.data, row.names = FALSE, file = "./Data/Processed/smaller_EPA_03_2018_data.csv")
+write.csv(smaller_EPA.PM25.2019.data, row.names = FALSE, 
+          file = "./Data/Processed/smaller_EPA_PM25_2019.csv")
+write.csv(smaller_EPA.PM25.2018.data, row.names = FALSE, 
+          file = "./Data/Processed/smaller_EPA_PM25_2018.csv")
+write.csv(smaller_EPA.03.2019.data, row.names = FALSE, 
+          file = "./Data/Processed/smaller_EPA_03_2019_data.csv")
+write.csv(smaller_EPA.03.2018.data, row.names = FALSE, 
+          file = "./Data/Processed/smaller_EPA_03_2018_data.csv")
 
 
 ```
@@ -152,27 +160,35 @@ write.csv(smaller_EPA.03.2018.data, row.names = FALSE, file = "./Data/Processed/
 ```{r}
 #7 
 
-CompleteList <- rbind(smaller_EPA.PM25.2019.data, smaller_EPA.PM25.2018.data, smaller_EPA.03.2019.data, smaller_EPA.03.2018.data)
-#view(CompleteList)
+CompleteList <- rbind(smaller_EPA.PM25.2019.data, smaller_EPA.PM25.2018.data, 
+                      smaller_EPA.03.2019.data, smaller_EPA.03.2018.data)
+view(CompleteList)
 #That works- they are all in one data frame now. 
 
-#8 QUESTION: is this looking right? did I "parce"? "should it be months or numbers?
+#8  "should it be months or numbers?
 
 EPA.data.processed <- 
   CompleteList %>%
-  filter(Site.Name == "Linville Falls" | Site.Name == "Durham Armory" | Site.Name == "Leggett" | Site.Name == "Hattie Avenue" | Site.Name == "Clemmons Middle" | Site.Name == "Mendenhall School" | Site.Name == "Frying Pan Mountain" | Site.Name == "West Johnston Co." | Site.Name == "Garinger High School" | Site.Name == "Castle Hayne" | Site.Name == "Pitt Agri. Center" | Site.Name == "Bryson City" | Site.Name == "Millbrook School" ) %>%
+  filter(Site.Name == "Linville Falls" | Site.Name == "Durham Armory" | 
+           Site.Name == "Leggett" | Site.Name == "Hattie Avenue" | 
+           Site.Name == "Clemmons Middle" | Site.Name == "Mendenhall School" | 
+           Site.Name == "Frying Pan Mountain" | Site.Name == "West Johnston Co." | 
+           Site.Name == "Garinger High School" | Site.Name == "Castle Hayne" | 
+           Site.Name == "Pitt Agri. Center" | Site.Name == "Bryson City" | 
+           Site.Name == "Millbrook School" ) %>%
   group_by(Date, Site.Name, AQS_PARAMETER_DESC, COUNTY) %>%
   summarise(meanAQI = mean(DAILY_AQI_VALUE), 
             meanLatitude = mean(SITE_LATITUDE), 
-            meanLongitude = mean(SITE_LONGITUDE)) %>% #ask if this is enough! STD DEV?
+            meanLongitude = mean(SITE_LONGITUDE)) %>% #STD DEV?
   mutate("Month" = month(Date)) %>%
   mutate("Year" = year(Date))
 
-#dim(EPA.data.processed) Its 14752 x 9!
+dim(EPA.data.processed) #Its 14752 x 9!
 
 #9 #should it be the data sheet I've been working on or should I name it something diffferent?
 
-EPA.data.processed <- pivot_wider(EPA.data.processed, names_from = AQS_PARAMETER_DESC, values_from = meanAQI)
+EPA.data.processed <- pivot_wider(EPA.data.processed, names_from = 
+AQS_PARAMETER_DESC, values_from = meanAQI)
 #view(EPA.data.processed)
 
 #10
@@ -198,7 +214,7 @@ write.csv(smaller_EPA.PM25.2019.data, row.names = FALSE, file = "./Data/Processe
 
 EPA.summaries <- 
   EPA.data.processed %>%
-  group_by(Site.Name, Month, Year) %>% #grouped but ask what this does...
+  group_by(Site.Name, Month, Year) %>% 
   summarise(meanOzone = mean(Ozone), #with SD?
             sdOzone = sd(Ozone), 
             meanPM = mean(PM2.5), 
@@ -208,9 +224,6 @@ EPA.Summary <-
   EPA.summaries %>%
   drop_na(meanOzone)
 view(EPA.Summary)
-
-
-
 
 #13
 
