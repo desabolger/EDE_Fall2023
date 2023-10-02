@@ -1,0 +1,173 @@
+---
+title: "Assignment 5: Data Visualization"
+author: "Desa Bolger"
+date: "Fall 2023"
+output: pdf_document
+geometry: margin=2.54cm
+fig_height: 3
+fig_width: 4
+editor_options: 
+  chunk_output_type: console
+---
+
+## OVERVIEW
+
+This exercise accompanies the lessons in Environmental Data Analytics on Data Visualization 
+
+## Directions
+1.  Rename this file `Desa_Bolger_A05_DataVisualization.Rmd` (replacing `<FirstLast>` with your first and last name).
+2. Change "Student Name" on line 3 (above) with your name.
+3. Work through the steps, **creating code and output** that fulfill each instruction.
+4. Be sure your code is tidy; use line breaks to ensure your code fits in the knitted output.
+5. Be sure to **answer the questions** in this assignment document.
+6. When you have completed the assignment, **Knit** the text and code into a single PDF file.
+
+---
+
+## Set up your session 
+
+1. Set up your session. Load the tidyverse, lubridate, here & cowplot packages, and verify your home directory. Read in the NTL-LTER processed data files for nutrients and chemistry/physics for Peter and Paul Lakes (use the tidy `NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv` version in the Processed_KEY folder) and the processed data file for the Niwot Ridge litter dataset (use the `NEON_NIWO_Litter_mass_trap_Processed.csv` version, again from the Processed_KEY folder). 
+
+2. Make sure R is reading dates as date format; if not change the format to date.
+
+```{r initialize project}
+#1 
+library(tidyverse)
+library(lubridate)
+library(here)
+library(cowplot)
+library(ggplot2)
+library(ggthemes)
+library(viridis)
+
+here() #"/home/guest/EDE_Fall2023"
+
+processed_data = "Data/Processed/Processed_KEY"
+PeterPaul.chem.nutrients <- read.csv(
+  here(processed_data,"NTL-LTER_Lake_Chemistry_Nutrients_PeterPaul_Processed.csv"),
+  stringsAsFactors = TRUE)
+
+#view(PeterPaul.chem.nutrients) #Looks Good
+
+Niwot_Ridge <- read.csv(
+  here(processed_data,"NEON_NIWO_Litter_mass_trap_Processed.csv"), 
+  stringsAsFactors = TRUE)
+view(Niwot_Ridge)
+
+#2 
+
+class(PeterPaul.chem.nutrients$sampledate)
+PeterPaul.chem.nutrients$sampledate <- ymd(PeterPaul.chem.nutrients$sampledate)
+class(PeterPaul.chem.nutrients$sampledate)
+class(Niwot_Ridge$collectDate)
+Niwot_Ridge$collectDate <- ymd(Niwot_Ridge$collectDate)
+class(Niwot_Ridge$collectDate)
+
+#Date changed
+```
+## Define your theme
+3. Build a theme and set it as your default theme. Customize the look of at least two of the following: 
+ * Plot background
+ * Plot title
+ * Axis labels
+ * Axis ticks/gridlines
+ * Legend
+
+```{r build plot theme}
+#3
+
+#how to set as default
+desa_theme <- theme_base() + 
+  theme(line = element_line(color='black',linewidth =.5),
+        text = element_text(color='black'),
+        panel.grid.major =  element_line(color='black', linewidth = .5),
+        rect = element_rect(color = 'lightpink', fill = 'lightpink'),
+        plot.background = element_rect(color = 'lightpink', fill = 'lightpink'),
+        panel.background =  element_rect(color = 'lightpink', fill = 'lightpink'),
+        legend.background = element_rect(color='lightblue', fill = 'lightblue'),
+        legend.title = element_text(color='darkblue'))
+
+theme_set(desa_theme)
+
+```
+
+## Create graphs
+For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best practices for data visualization. Ensure your theme, color palettes, axes, and additional aesthetics are edited accordingly.
+
+4. [NTL-LTER] Plot total phosphorus (`tp_ug`) by phosphate (`po4`), with separate aesthetics for Peter and Paul lakes. Add a line of best fit and color it black. Adjust your axes to hide extreme values (hint: change the limits using `xlim()` and/or `ylim()`).
+
+```{r plot total P vs PO4}
+#4 
+
+# am i missing anything on these charts? line of best fit for both? ok to remove SE?
+PhosByPhos <- ggplot(PeterPaul.chem.nutrients, aes(x = po4, y = tp_ug, color = lakename, shape = lakename)) +
+  geom_point(alpha = 0.75, size = 1.5) +
+  xlim(0,50)+
+  scale_color_viridis(discrete = TRUE,option = 'turbo')+
+  stat_smooth(method = lm, se = F)
+  #theme(legend.title = "Lake Name")+ #How do i do this
+
+
+print(PhosByPhos) 
+
+```
+
+
+5. [NTL-LTER] Make three separate boxplots of (a) temperature, (b) TP, and (c) TN, with month as the x axis and lake as a color aesthetic. Then, create a cowplot that combines the three graphs. Make sure that only one legend is present and that graph axes are aligned. 
+
+Tip:
+* Recall the discussion on factors in the previous section as it may be helpful here. 
+* R has a built-in variable called `month.abb` that returns a list of months;see <https://r-lang.com/month-abb-in-r-with-example>
+
+```{r Create boxplots}
+#5 #need help with the month.  factor question?. also cowplot
+
+Temp <- ggplot(PeterPaul.chem.nutrients, aes(x = month, y = temperature_C, fill = lakename,)) +
+  #theme(legend.title = "Lake Name")+ #How do i do this
+  geom_boxplot(color = 'white')
+print(Temp) 
+
+TP <- ggplot(PeterPaul.chem.nutrients, aes(x = month, y = tp_ug, fill = lakename,)) +
+  #theme(legend.title = "Lake Name")+ #How do i do this
+  geom_boxplot(color = 'white')
+print(TP) 
+
+TN <- ggplot(PeterPaul.chem.nutrients, aes(x = month, y = tn_ug, fill = lakename,)) +
+  #theme(legend.title = "Lake Name")+ #How do i do this
+  geom_boxplot(color = 'white')
+print(TN) 
+
+plot_grid(Temp, TP, TN, ncol = 3, align = 'v')
+
+```
+
+Question: What do you observe about the variables of interest over seasons and between lakes? 
+
+> Answer: NEED TO ANSWER
+
+6. [Niwot Ridge] Plot a subset of the litter dataset by displaying only the "Needles" functional group. Plot the dry mass of needle litter by date and separate by NLCD class with a color aesthetic. (no need to adjust the name of each land use)
+
+7. [Niwot Ridge] Now, plot the same plot but with NLCD classes separated into three facets rather than separated by color. 
+
+```{r Plot litter}
+#6 Isolating Needles. back to my old theme. add title. double check that i functional grouped correctly.
+
+Needles <- ggplot(subset(Niwot_Ridge, functionalGroup == "Needles" ), aes(x = collectDate, y = dryMass, color = nlcdClass)) +
+  geom_point() +
+  theme_bw()
+  #theme(legend.title = "Lake Name")+ #How do i do this
+print(Needles) 
+
+#7
+
+Needles2 <- ggplot(subset(Niwot_Ridge, functionalGroup == "Needles" ), aes(x = collectDate, y = dryMass, color = nlcdClass)) +
+  geom_point() +
+  theme_bw()+
+  facet_wrap(vars(nlcdClass), ncol = 3)
+  #theme(legend.title = "Lake Name")+ #How do i do this
+print(Needles2) 
+
+```
+Question: Which of these plots (6 vs. 7) do you think is more effective, and why? 
+
+> Answer: 7.
