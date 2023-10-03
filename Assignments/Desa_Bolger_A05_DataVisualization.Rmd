@@ -76,7 +76,6 @@ class(Niwot_Ridge$collectDate)
 ```{r build plot theme}
 #3
 
-#how to set as default
 desa_theme <- theme_base() + 
   theme(line = element_line(color='black',linewidth =.5),
         text = element_text(color='black'),
@@ -87,7 +86,7 @@ desa_theme <- theme_base() +
         legend.background = element_rect(color='lightblue', fill = 'lightblue'),
         legend.title = element_text(color='darkblue'))
 
-theme_set(desa_theme)
+theme_set(desa_theme) #set as default
 
 ```
 
@@ -99,13 +98,16 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 ```{r plot total P vs PO4}
 #4 
 
-# am i missing anything on these charts? line of best fit for both? ok to remove SE?
-PhosByPhos <- ggplot(PeterPaul.chem.nutrients, aes(x = po4, y = tp_ug, color = lakename, shape = lakename)) +
+#notes: do axis titles. 
+
+PhosByPhos <- ggplot(PeterPaul.chem.nutrients, aes(x = po4, y = tp_ug, color = lakename)) +
   geom_point(alpha = 0.75, size = 1.5) +
   xlim(0,50)+
-  scale_color_viridis(discrete = TRUE,option = 'turbo')+
-  stat_smooth(method = lm, se = F)
-  #theme(legend.title = "Lake Name")+ #How do i do this
+  scale_color_viridis(discrete = TRUE, name = "Lakes") +
+  stat_smooth(method = lm, se = F)+
+  xlab(expression(paste("PO4")))+
+  ylab(expression(paste("TP *add in what it actually is*", mu, "g")))
+
 
 
 print(PhosByPhos) 
@@ -120,11 +122,16 @@ Tip:
 * R has a built-in variable called `month.abb` that returns a list of months;see <https://r-lang.com/month-abb-in-r-with-example>
 
 ```{r Create boxplots}
-#5 #need help with the month.  factor question?. also cowplot
+#5. also cowplot
+# 24 box plots. 
+PeterPaul.chem.nutrients$month <- as.factor(PeterPaul.chem.nutrients$month)
 
-Temp <- ggplot(PeterPaul.chem.nutrients, aes(x = month, y = temperature_C, fill = lakename,)) +
+#change axis, update below.
+Temp <- ggplot(PeterPaul.chem.nutrients, aes(x = month, y = temperature_C, color = lakename)) +
+    geom_boxplot()+
+  scale_x_discrete(limits = factor("5":"11"), labels = c("May", "June", "July", "Aug", "Sept", "Oct", "Nov"))
+  
   #theme(legend.title = "Lake Name")+ #How do i do this
-  geom_boxplot(color = 'white')
 print(Temp) 
 
 TP <- ggplot(PeterPaul.chem.nutrients, aes(x = month, y = tp_ug, fill = lakename,)) +
@@ -137,7 +144,9 @@ TN <- ggplot(PeterPaul.chem.nutrients, aes(x = month, y = tn_ug, fill = lakename
   geom_boxplot(color = 'white')
 print(TN) 
 
-plot_grid(Temp, TP, TN, ncol = 3, align = 'v')
+plot_grid(Temp, TP, TN)
+
+#function get legend for one of the plots. add legend object into the triple plot. pull one of the legend. can cowplot anyway i want. could do 1 2 3 and legend in 4th sqaure. main thing is think about how to pull a legend using get legend. in theme get legend - legend position = 
 
 ```
 
@@ -152,7 +161,7 @@ Question: What do you observe about the variables of interest over seasons and b
 ```{r Plot litter}
 #6 Isolating Needles. back to my old theme. add title. double check that i functional grouped correctly.
 
-Needles <- ggplot(subset(Niwot_Ridge, functionalGroup == "Needles" ), aes(x = collectDate, y = dryMass, color = nlcdClass)) +
+Needles <- ggplot(subset(Niwot_Ridge, functionalGroup == 'Needles' ), aes(x = collectDate, y = dryMass, color = nlcdClass)) +
   geom_point() +
   theme_bw()
   #theme(legend.title = "Lake Name")+ #How do i do this
@@ -160,7 +169,7 @@ print(Needles)
 
 #7
 
-Needles2 <- ggplot(subset(Niwot_Ridge, functionalGroup == "Needles" ), aes(x = collectDate, y = dryMass, color = nlcdClass)) +
+Needles2 <- ggplot(subset(Niwot_Ridge, functionalGroup == 'Needles' ), aes(x = collectDate, y = dryMass)) +
   geom_point() +
   theme_bw()+
   facet_wrap(vars(nlcdClass), ncol = 3)
