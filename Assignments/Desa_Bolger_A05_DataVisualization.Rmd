@@ -119,7 +119,7 @@ Tip:
 * R has a built-in variable called `month.abb` that returns a list of months;see <https://r-lang.com/month-abb-in-r-with-example>
 
 ```{r Create boxplots}
-#5. Boxplot!!!    check cowplot and format
+#5. Boxplot!!!    check cowplot and format (text size?) (background color). aligning axis
 # 24 box plots. 
 PeterPaul.chem.nutrients$month <- as.factor(PeterPaul.chem.nutrients$month)
 
@@ -158,12 +158,10 @@ finished <-plot_grid(
   TP + theme(legend.position="none"),
   TN + theme(legend.position="none"),
   FinalLegend,
-  align = 'vh')
+  align = 'v')
+
 
 print(finished)
-  
-
-#function get legend for one of the plots. add legend object into the triple plot. pull one of the legend. can cowplot anyway i want. could do 1 2 3 and legend in 4th sqaure. main thing is think about how to pull a legend using get legend. in theme get legend - legend position = 
 
 ```
 
@@ -180,7 +178,7 @@ Question: What do you observe about the variables of interest over seasons and b
 
 Needles <- ggplot(subset(Niwot_Ridge, functionalGroup == 'Needles' ), aes(x = collectDate, y = dryMass, color = nlcdClass)) +
   geom_point() +
-  scale_color_viridis(discrete = TRUE, , name = "NLCD Class") +
+  scale_color_viridis(discrete = TRUE, name = "NLCD Class") +
   xlab(expression(paste("Year" )))+
   ylab(expression(paste("Dry Mass (g)"))) #check grams
   print(Needles) 
