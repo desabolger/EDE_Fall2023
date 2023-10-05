@@ -159,13 +159,10 @@ finished <- plot_grid(
   Temp + theme(legend.position = "none"),
   TP + theme(legend.position = "none"),
   TN + theme(legend.position = "none"),
-  FinalLegend,
-  nrow = 2,
-  ncol = 2,
-  theme(axis.text = element_text(size = 6)), #not working
+  nrow = 3,
   align = 'hv')
 
-
+finished1 <- plot_grid(finished, FinalLegend, rel_widths = c(1, 0.3))
 print(finished)
 
 ```
