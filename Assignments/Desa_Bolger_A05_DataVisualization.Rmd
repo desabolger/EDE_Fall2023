@@ -99,7 +99,8 @@ For numbers 4-7, create ggplot graphs and adjust aesthetics to follow best pract
 ```{r plot total P vs PO4}
 #4 PHOS x PHOSPHATE.    
 
-PhosByPhos <- ggplot(PeterPaul.chem.nutrients, aes(x = po4, y = tp_ug, color = lakename)) +
+PhosByPhos <- ggplot(PeterPaul.chem.nutrients, aes(x = po4, y = tp_ug, 
+                                                   color = lakename)) +
   geom_point(alpha = 0.75, size = 1.5) +
   xlim(0,50)+
   scale_color_viridis(discrete = TRUE, option = "turbo", name = "Lakes") +
@@ -123,11 +124,18 @@ Tip:
 
 PeterPaul.chem.nutrients$month <- as.factor(PeterPaul.chem.nutrients$month)
 
-Temp <- ggplot(PeterPaul.chem.nutrients, aes(x = month, y = temperature_C, color = lakename)) +
+Temp <- ggplot(PeterPaul.chem.nutrients, aes(x = month, y = temperature_C, 
+                                             color = lakename)) +
   geom_boxplot(fill = 'lightgrey')+
-  scale_x_discrete(limits = factor("5":"11"), labels = c("May", "June", "July", "Aug", "Sept", "Oct", "Nov"))+
+  scale_x_discrete(limits = factor("1":"12"), labels = c("Jan", "Feb", "March", 
+  "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"))+
   xlab(expression(paste("Month")))+
-  ylab(expression(paste("Temperature (degrees C)")))+
+  ylab(expression(paste("Temperature (C)")))+
+   theme(axis.text.x = element_text(size = 7))+
+  theme(axis.text.y = element_text(size = 7))+
+   theme(axis.title.y = element_text(size = 8))+
+  theme(axis.title.x = element_text(size = 8))+
+
   scale_color_brewer(palette = "Dark2", name = "Lakes") 
 
 print(Temp) 
@@ -135,34 +143,45 @@ print(Temp)
 # getting the legend
 FinalLegend <- get_legend(Temp)
 
-TP <- ggplot(PeterPaul.chem.nutrients, aes(x = month, y = tp_ug, color = lakename)) +
+TP <- ggplot(PeterPaul.chem.nutrients, aes(x = month, y = tp_ug, 
+                                           color = lakename)) +
   geom_boxplot(fill = 'lightgrey')+
-  scale_x_discrete(limits = factor("5":"11"), labels = c("May", "June", "July", "Aug", "Sept", "Oct", "Nov"))+
+ scale_x_discrete(limits = factor("1":"12"), labels = c("Jan", "Feb", "March", 
+  "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"))+
   xlab(expression(paste("Month")))+
   ylab(expression(paste("Total Phosphorus (", mu, "g)")))+
+theme(axis.text.x = element_text(size = 7))+
+    theme(axis.text.y = element_text(size = 7))+
+  theme(axis.title.y = element_text(size = 8))+
+  theme(axis.title.x = element_text(size = 8))+
   scale_color_brewer(palette = "Dark2", name = "Lakes") 
 
 print(TP) 
 
-TN <- ggplot(PeterPaul.chem.nutrients, aes(x = month, y = tn_ug, color = lakename)) +
+TN <- ggplot(PeterPaul.chem.nutrients, aes(x = month, y = tn_ug, 
+                                           color = lakename)) +
   geom_boxplot(fill = 'lightgrey')+
-  scale_x_discrete(limits = factor("5":"11"), labels = c("May", "June", "July", "Aug", "Sept", "Oct", "Nov"))+
+ scale_x_discrete(limits = factor("1":"12"), labels = c("Jan", "Feb", "March", 
+  "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"))+
   xlab(expression(paste("Month")))+
   ylab(expression(paste("Total Nitrogen (", mu, "g)")))+
+  theme(axis.text.x = element_text(size = 7))+
+    theme(axis.text.y = element_text(size = 7))+
+  theme(axis.title.x = element_text(size = 8))+
+  theme(axis.title.y = element_text(size = 8))+
   scale_color_brewer(palette = "Dark2", name = "Lakes") 
 
 print(TN) 
 
-#issue: font, not aligned, colored background?
 
 finished <- plot_grid(
   Temp + theme(legend.position = "none"),
   TP + theme(legend.position = "none"),
-  TN + theme(legend.position = "none"),
-  nrow = 3,
-  align = 'hv')
+  TN + theme(legend.position = "bottom"),
+  rel_heights = c(2,2,2.5),
+  ncol = 1,
+  align = 'h')
 
-finished1 <- plot_grid(finished, FinalLegend, rel_widths = c(1, 0.3))
 print(finished)
 
 ```
@@ -178,20 +197,22 @@ Question: What do you observe about the variables of interest over seasons and b
 ```{r Plot litter}
 #6 Isolating Needles.       
 
-Needles <- ggplot(subset(Niwot_Ridge, functionalGroup == 'Needles' ), aes(x = collectDate, y = dryMass, color = nlcdClass)) +
+Needles <- ggplot(subset(Niwot_Ridge, functionalGroup == 'Needles' ), aes(
+  x = collectDate, y = dryMass, color = nlcdClass)) +
   geom_point() +
   scale_color_viridis(discrete = TRUE, name = "NLCD Class") +
   xlab(expression(paste("Year" )))+
-  ylab(expression(paste("Dry Mass (g)"))) #check grams
+  ylab(expression(paste("Dry Mass (g)"))) 
   print(Needles) 
 
 #7
 
-Needles2 <- ggplot(subset(Niwot_Ridge, functionalGroup == 'Needles' ), aes(x = collectDate, y = dryMass)) +
+Needles2 <- ggplot(subset(Niwot_Ridge, functionalGroup == 'Needles' ), aes(
+  x = collectDate, y = dryMass)) +
   geom_point() +
   facet_wrap(vars(nlcdClass), ncol = 3) +
   xlab(expression(paste("Year")))+
-  ylab(expression(paste("Dry Mass (g)"))) #check grams
+  ylab(expression(paste("Dry Mass (g)")))
 print(Needles2) 
 
 ```
