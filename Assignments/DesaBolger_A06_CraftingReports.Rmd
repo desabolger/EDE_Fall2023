@@ -26,9 +26,7 @@ toc: true
 
 Using markdown, create a table beneath the `Table: EPA Air Quality` line below that summarizes the metadata of the EPA Air Quality data. The first column should have the header "Item" and should include the the three metadata attribute item names: "Source", "Date", and "Filename". The second column should have the header "Value" and include the metadata values: "EPA Air Quality System (AQS)", "2018-2019", and "EPAair_O3_PM25_NC1819_Processed.csv". The first column should be aligned to the right and the second to the left.
 
-Table: EPA Air Quality
-
-```{r}
+```{r echo=FALSE, fig.cap="EPA Air Quality", message=FALSE, warning=FALSE}
 library(tidyverse)
 library(here)
 library(lubridate)
@@ -42,7 +40,7 @@ EPAair <- read.csv(
 
 #Fix dates
 EPAair$Date = ymd(EPAair$Date)
-class(EPAair$Date)
+#class(EPAair$Date)
 
 
 Item <- c("Source", "Date", "Filename")
@@ -137,7 +135,7 @@ Box1 <- ggplot(subset(epa_data, Year == 2018), aes(x = Month, y = Ozone)) +
   geom_boxplot()+
   scale_x_discrete(limits = factor("1":"12"), labels = c("Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"))+ 
   xlab(expression(paste("Month")))+
-  ylab(expression(paste("Concentration ($\\mu g/m^3$)")))+
+  ylab(expression(paste("Concentration (", mu, "g/m"^3 ,")" )))+
   ggtitle("Recorded Ozone by Month (2018)")
 
 print(Box1)
@@ -152,7 +150,7 @@ Box2 <- ggplot(subset(epa_data, Year == 2019), aes(x = Month, y = Ozone)) +
   geom_boxplot()+
   scale_x_discrete(limits = factor("1":"12"), labels = c("Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"))+ 
   xlab(expression(paste("Month")))+
-  ylab(expression(paste("Concentration ($\\mu g/m^3$)")))+
+  ylab(expression(paste("Concentration (", mu, "g/m"^3 ,")" )))+
   ggtitle("Recorded Ozone by Month (2019)")
 
 print(Box2)
@@ -168,3 +166,5 @@ print(Box2)
 Add a table of contents to your document and knit to a PDF. Submit your PDF to Sakai, but also be sure to commit and push your Rmd file used to create this knit document to GitHub. In the section below, add a link to your GitHub repository.
 
 ## Git Repository
+
+<https://github.com/desabolger/EDE_Fall2023>
