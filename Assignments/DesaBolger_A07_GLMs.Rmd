@@ -91,15 +91,14 @@ ChemPhysics.processed <-
 view(ChemPhysics.processed)
 
 
-#5 is this right or reversed?? do i need to invert?
+#5 
 
-ChemGraph <- ggplot(ChemPhysics.processed, aes(x = temperature_C, y = depth)) +
-  geom_point(alpha = 0.75, size = 1.5) +
-  scale_y_reverse(limits=c(15, 0))+
+ChemGraph <- ggplot(ChemPhysics.processed, aes(x = depth, y = temperature_C)) +
+  geom_point(alpha = 0.5, size = 1.5) +
   stat_smooth(method = lm, se = F, color = 'black')+
-  xlim(0,35)+
-  xlab(expression(paste("Temperature (C)" )))+
-  ylab(expression(paste("Depth")))
+  ylim(0,35)+
+  xlab(expression(paste("Depth" )))+
+  ylab(expression(paste("Temperature (C)")))
 #prob add a title
 
 print(ChemGraph) 
@@ -110,13 +109,13 @@ print(ChemGraph)
 
 6. Interpret the figure. What does it suggest with regards to the response of temperature to depth? Do the distribution of points suggest about anything about the linearity of this trend?
 
-> Answer: It suggests that (may need to reverse) as temperature decreases, so does depth.  The distribution seems to fit the linear regression line, suggesting it may be linear. 
+> Answer: It suggests that as depth increases, temperature decreases.  The distribution seems to follow the line, suggesting it may be linear, but we should do a linear regression to be sure. 
 
 
 7. Perform a linear regression to test the relationship and display the results
 
 ```{r linear.regression}
-#7 Order
+#7 Order!!!
 
 Chem.regression <- 
   lm(ChemPhysics.processed$temperature_C ~ 
