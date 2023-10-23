@@ -27,10 +27,32 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 
 ```{r setup2}
 #1
+#install.packages("agricolae")
+library(agricolae) 
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(here)
+library(ggthemes)
+here()
 
+ChemPhysics <- read.csv(here("Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv"), stringsAsFactors = TRUE)
+
+#view(ChemPhysics)
 
 #2
 
+desa_theme <- theme_base() + 
+  theme(line = element_line(color='black',linewidth =.5),
+        text = element_text(color='black'),
+        panel.grid.major =  element_line(color='black', linewidth = .5),
+        rect = element_rect(color = 'lightgrey', fill = 'lightgrey'),
+        plot.background = element_rect(color = 'lightgrey', fill = 'lightgrey'),
+        panel.background =  element_rect(color = 'lightgrey', fill = 'lightgrey'),
+        legend.background = element_rect(color='lightblue', fill = 'lightblue'),
+        legend.title = element_text(color='darkblue'))
+
+theme_set(desa_theme) #set as default
 
 ```
 
@@ -38,9 +60,9 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 Our first research question is: Does mean lake temperature recorded during July change with depth across all lakes?
 
 3. State the null and alternative hypotheses for this question:
-> Answer:
-H0: 
-Ha: 
+> Answer: (do i need to put anything here)???
+H0: Mean lake temperature does not change with depth across all lakes.
+Ha: Mean lake temperature does change with depth across all lakes.
 
 
 4.  Wrangle your NTL-LTER dataset with a pipe function so that the records meet the following criteria: 
@@ -53,8 +75,34 @@ Ha:
 ```{r scatterplot}
 #4
 
+class(ChemPhysics$sampledate) #05/27/84
+# a factor! we will switch it
+ChemPhysics$sampledate <- as.Date(ChemPhysics$sampledate, format = "%m/%d/%y")
+class(ChemPhysics$sampledate) #now its a date!
+#view(ChemPhysics)
 
-#5
+ChemPhysics.processed <- 
+  ChemPhysics %>%
+  mutate("Month" = month(sampledate)) %>%
+  filter(Month == 7) %>%  
+  select(lakename, year4, daynum, depth, temperature_C) %>%
+  drop_na()
+
+view(ChemPhysics.processed)
+
+
+#5 is this right or reversed?? do i need to invert?
+
+ChemGraph <- ggplot(ChemPhysics.processed, aes(x = temperature_C, y = depth)) +
+  geom_point(alpha = 0.75, size = 1.5) +
+  scale_y_reverse(limits=c(15, 0))+
+  stat_smooth(method = lm, se = F, color = 'black')+
+  xlim(0,35)+
+  xlab(expression(paste("Temperature (C)" )))+
+  ylab(expression(paste("Depth")))
+#prob add a title
+
+print(ChemGraph) 
 
 
 ```
@@ -62,21 +110,31 @@ Ha:
 
 6. Interpret the figure. What does it suggest with regards to the response of temperature to depth? Do the distribution of points suggest about anything about the linearity of this trend?
 
-> Answer: 
+> Answer: It suggests that (may need to reverse) as temperature decreases, so does depth.  The distribution seems to fit the linear regression line, suggesting it may be linear. 
 
 
 7. Perform a linear regression to test the relationship and display the results
 
 ```{r linear.regression}
-#7
+#7 Order
 
+Chem.regression <- 
+  lm(ChemPhysics.processed$temperature_C ~ 
+       ChemPhysics.processed$depth)
+
+print(Chem.regression)
+print("y = -19.46x + 21.956")
+
+cor.test(ChemPhysics.processed$temperature_C , ChemPhysics.processed$depth)
+#is this the right test and the right order. 
 
 ```
 
 
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
-> Answer:
+> Answer: 
+HOW TO GET DF.
 
 
 ---
@@ -92,9 +150,30 @@ Let's tackle a similar question from a different approach. Here, we want to expl
 ```{r temperature.model}
 #9
 
+CPaic <- lm(data = ChemPhysics.processed, temperature_C ~ year4 + daynum + depth)
+
+#Choose a model by AIC in a Stepwise Algorithm
+step(CPaic)
+CPmodel <- lm(data = ChemPhysics.processed, temperature_C ~ year4 + daynum + depth)
+summary(CPmodel)
+
+#I think its daynum and depth, maybe year 4 based on p value.??
 
 
-#10
+#10 PAUSED HERE.. having issues...
+
+CPregression <- lm((data = ChemPhysics.processed), temperature_C ~ daynum + depth)
+summary(CPregression)
+
+TPplot <- ggplot(subset(PeterPaul.chem.nutrients, lakename == "Paul Lake"), 
+                 aes(x = dissolvedOxygen, y = tp_ug, color = depth)) +
+  geom_point() +
+  xlim(0, 20)
+print(TPplot)
+
+par(mfrow = c(2,2), mar=c(4,4,4,4))
+plot(TPregression)
+par(mfrow = c(1,1))
 
 
 ```
