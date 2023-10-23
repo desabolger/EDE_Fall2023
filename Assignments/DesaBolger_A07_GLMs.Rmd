@@ -164,14 +164,14 @@ summary(CPmodel)
 CPregression <- lm((data = ChemPhysics.processed), temperature_C ~ daynum + depth)
 summary(CPregression)
 
-TPplot <- ggplot(subset(PeterPaul.chem.nutrients, lakename == "Paul Lake"), 
-                 aes(x = dissolvedOxygen, y = tp_ug, color = depth)) +
-  geom_point() +
-  xlim(0, 20)
-print(TPplot)
+#TPplot <- ggplot(subset(PeterPaul.chem.nutrients, lakename == "Paul Lake"), 
+         #        aes(x = dissolvedOxygen, y = tp_ug, color = depth)) +
+ #eom_point() +
+ # xlim(0, 20)
+#print(TPplot)
 
 par(mfrow = c(2,2), mar=c(4,4,4,4))
-plot(TPregression)
+plot(CPregression)
 par(mfrow = c(1,1))
 
 
@@ -189,21 +189,39 @@ par(mfrow = c(1,1))
 12. Now we want to see whether the different lakes have, on average, different temperatures in the month of July. Run an ANOVA test to complete this analysis. (No need to test assumptions of normality or similar variances.) Create two sets of models: one expressed as an ANOVA models and another expressed as a linear model (as done in our lessons).
 
 ```{r anova.model}
-#12
+#12 is this it
+
+# Format ANOVA as aov
+Chem.anova <- aov(data = ChemPhysics.processed, temperature_C ~ lakename)
+summary(Chem.anova)
+
+#results: reject null hypothesis i.e. difference between a pair of group means is statistically significant
+
+# Format ANOVA as lm
+Chem.anova2 <- lm(data = ChemPhysics.processed, temperature_C ~ lakename)
+summary(Chem.anova)
+
+#results: reject null hypothesis i.e. difference between a pair of group means is statistically significant
 
 
 ```
 
 13. Is there a significant difference in mean temperature among the lakes? Report your findings. 
 
-> Answer: 
+> Answer: yes. The P value is <2e-16 (less than 0.1), so it is statistically significant. 
 
 
 
 14. Create a graph that depicts temperature by depth, with a separate color for each lake. Add a geom_smooth (method = "lm", se = FALSE) for each lake. Make your points 50 % transparent. Adjust your y axis limits to go from 0 to 35 degrees. Clean up your graph to make it pretty. 
 
 ```{r scatterplot.2}
-#14.
+#14. depth units, do i want a line for each? 
+
+ggplot(ChemPhysics.processed, aes(x = depth, y = temperature_C, color = lakename)) +
+  geom_point(alpha = 0.5, ) +
+  geom_smooth(method = "lm", se = FALSE) + 
+  labs(x = "Depth", y = "Temperature (C)") +
+  ylim(0, 35)
 
 
 ```
@@ -211,20 +229,22 @@ par(mfrow = c(1,1))
 15. Use the Tukey's HSD test to determine which lakes have different means.
 
 ```{r tukey.test}
-#15
+#15 is this it???
+
+TukeyHSD(Chem.anova)
 
 
 ```
 
 16.From the findings above, which lakes have the same mean temperature, statistically speaking, as Peter Lake? Does any lake have a mean temperature that is statistically distinct from all the other lakes?
 
->Answer:
+>Answer: Ask about how to run this
 
  
 
 17. If we were just looking at Peter Lake and Paul Lake. What's another test we might explore to see whether they have distinct mean temperatures? 
 
->Answer: 
+>Answer: 2 way anova? 
 
 
 
