@@ -59,10 +59,10 @@ theme_set(desa_theme) #set as default
 ## Simple regression
 Our first research question is: Does mean lake temperature recorded during July change with depth across all lakes?
 
-3. State the null and alternative hypotheses for this question:
-> Answer: (do i need to put anything here)???
+3. State the null and alternative hypotheses for this question: 
+> Answer: (ASK)
 H0: Mean lake temperature does not change with depth across all lakes.
-Ha: Mean lake temperature does change with depth across all lakes.
+HA: Mean lake temperature does change with depth across all lakes.
 
 
 4.  Wrangle your NTL-LTER dataset with a pipe function so that the records meet the following criteria: 
@@ -88,7 +88,7 @@ ChemPhysics.processed <-
   select(lakename, year4, daynum, depth, temperature_C) %>%
   drop_na()
 
-view(ChemPhysics.processed)
+#view(ChemPhysics.processed)
 
 
 #5 
@@ -124,7 +124,7 @@ Chem.regression <-
 print(Chem.regression)
 print("y = -19.46x + 21.956")
 
-cor.test(ChemPhysics.processed$temperature_C , ChemPhysics.processed$depth)
+cor.test(ChemPhysics.processed$temperature_C, ChemPhysics.processed$depth)
 #is this the right test and the right order. 
 
 ```
@@ -215,7 +215,7 @@ summary(Chem.anova)
 14. Create a graph that depicts temperature by depth, with a separate color for each lake. Add a geom_smooth (method = "lm", se = FALSE) for each lake. Make your points 50 % transparent. Adjust your y axis limits to go from 0 to 35 degrees. Clean up your graph to make it pretty. 
 
 ```{r scatterplot.2}
-#14. depth units, do i want a line for each? 
+#14. depth units,  
 
 ggplot(ChemPhysics.processed, aes(x = depth, y = temperature_C, color = lakename)) +
   geom_point(alpha = 0.5, ) +
@@ -251,6 +251,12 @@ TukeyHSD(Chem.anova)
 18. Wrangle the July data to include only records for Crampton Lake and Ward Lake. Run the two-sample T-test on these data to determine whether their July temperature are same or different. What does the test say? Are the mean temperatures for the lakes equal? Does that match you answer for part 16?
 
 ```{r t.test}
+
+ChemPhysics.processed2 <- 
+  ChemPhysics.processed %>%
+  filter(lakename == "Crampton Lake" | lakename == "Ward Lake") 
+
+view(ChemPhysics.processed2)
 
 ```
 
