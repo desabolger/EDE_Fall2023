@@ -34,6 +34,7 @@ library(lubridate)
 library(ggplot2)
 library(here)
 library(ggthemes)
+library(viridis)
 here()
 
 ChemPhysics <- read.csv(here("Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv"), stringsAsFactors = TRUE)
@@ -95,11 +96,11 @@ ChemPhysics.processed <-
 
 ChemGraph <- ggplot(ChemPhysics.processed, aes(x = depth, y = temperature_C)) +
   geom_point(alpha = 0.5, size = 1.5) +
-  stat_smooth(method = lm, se = F, color = 'black')+
+  stat_smooth(method = lm, se = F, color = 'red')+
   ylim(0,35)+
-  xlab(expression(paste("Depth" )))+
+  xlab(expression(paste("Depth (m)" )))+
   ylab(expression(paste("Temperature (C)")))
-#prob add a title
+
 
 print(ChemGraph) 
 
@@ -115,7 +116,7 @@ print(ChemGraph)
 7. Perform a linear regression to test the relationship and display the results
 
 ```{r linear.regression}
-#7 Order!!!
+#7 
 
 Chem.regression <- 
   lm(ChemPhysics.processed$temperature_C ~ 
@@ -125,7 +126,7 @@ print(Chem.regression)
 print("y = -19.46x + 21.956")
 
 cor.test(ChemPhysics.processed$temperature_C, ChemPhysics.processed$depth)
-#is this the right test and the right order. 
+#df = 9726. p value < 2.2e-16
 
 ```
 
@@ -133,8 +134,6 @@ cor.test(ChemPhysics.processed$temperature_C, ChemPhysics.processed$depth)
 8. Interpret your model results in words. Include how much of the variability in temperature is explained by changes in depth, the degrees of freedom on which this finding is based, and the statistical significance of the result. Also mention how much temperature is predicted to change for every 1m change in depth. 
 
 > Answer: 
-HOW TO GET DF.
-
 
 ---
 
@@ -189,7 +188,7 @@ par(mfrow = c(1,1))
 12. Now we want to see whether the different lakes have, on average, different temperatures in the month of July. Run an ANOVA test to complete this analysis. (No need to test assumptions of normality or similar variances.) Create two sets of models: one expressed as an ANOVA models and another expressed as a linear model (as done in our lessons).
 
 ```{r anova.model}
-#12 is this it
+#12 
 
 # Format ANOVA as aov
 Chem.anova <- aov(data = ChemPhysics.processed, temperature_C ~ lakename)
@@ -215,12 +214,14 @@ summary(Chem.anova)
 14. Create a graph that depicts temperature by depth, with a separate color for each lake. Add a geom_smooth (method = "lm", se = FALSE) for each lake. Make your points 50 % transparent. Adjust your y axis limits to go from 0 to 35 degrees. Clean up your graph to make it pretty. 
 
 ```{r scatterplot.2}
-#14. depth units,  
+#14. 
 
 ggplot(ChemPhysics.processed, aes(x = depth, y = temperature_C, color = lakename)) +
   geom_point(alpha = 0.5, ) +
-  geom_smooth(method = "lm", se = FALSE) + 
-  labs(x = "Depth", y = "Temperature (C)") +
+  geom_smooth(method = "lm", se = FALSE, ) + 
+  scale_color_viridis(discrete = TRUE, option = "turbo", name = "Lakes") +
+
+  labs(x = "Depth (m)", y = "Temperature (C)")+
   ylim(0, 35)
 
 
@@ -233,6 +234,9 @@ ggplot(ChemPhysics.processed, aes(x = depth, y = temperature_C, color = lakename
 
 TukeyHSD(Chem.anova)
 
+#could adjust below from notes$
+#Litter.Totals.groups <- HSD.test(Chem.anova, "plotID", group = TRUE)
+#Litter.Totals.groups
 
 ```
 
@@ -251,12 +255,26 @@ TukeyHSD(Chem.anova)
 18. Wrangle the July data to include only records for Crampton Lake and Ward Lake. Run the two-sample T-test on these data to determine whether their July temperature are same or different. What does the test say? Are the mean temperatures for the lakes equal? Does that match you answer for part 16?
 
 ```{r t.test}
+# i feel like i did this in a weird way
 
 ChemPhysics.processed2 <- 
   ChemPhysics.processed %>%
   filter(lakename == "Crampton Lake" | lakename == "Ward Lake") 
-
 view(ChemPhysics.processed2)
+
+Crampton <- 
+  ChemPhysics.processed2 %>%
+  filter(lakename == "Crampton Lake") 
+view(Crampton)
+
+Ward <- 
+  ChemPhysics.processed2 %>%
+  filter(lakename == "Ward Lake") 
+view(Ward)
+
+CP.twosample <- t.test(Crampton$temperature_C ~ Ward$temperature_C)
+CP.twosample
+#issue is that its saying I have unequal columns. 
 
 ```
 
