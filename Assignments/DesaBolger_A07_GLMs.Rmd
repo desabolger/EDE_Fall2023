@@ -228,12 +228,12 @@ ggplot(ChemPhysics.processed, aes(x = depth, y = temperature_C, color = lakename
 15. Use the Tukey's HSD test to determine which lakes have different means.
 
 ```{r tukey.test}
-#15 HELP
+#15
 
 TukeyHSD(Chem.anova)
 
-HSD.test(Chem.anova, "lakename", group = TRUE)
-
+ChemTukey <- HSD.test(Chem.anova, "lakename", group = TRUE)
+ChemTukey
 
 ```
 
