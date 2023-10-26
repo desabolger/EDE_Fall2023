@@ -37,8 +37,16 @@ library(ggthemes)
 library(viridis)
 here()
 
-ChemPhysics <- read.csv(here("Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv"), stringsAsFactors = TRUE)
+ChemPhysics <- read.csv(here("Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv"),
+                        stringsAsFactors = TRUE)
 
+#view(ChemPhysics)
+
+
+class(ChemPhysics$sampledate) #05/27/84
+# a factor! we will switch it
+ChemPhysics$sampledate <- as.Date(ChemPhysics$sampledate, format = "%m/%d/%y")
+class(ChemPhysics$sampledate) #now its a date!
 #view(ChemPhysics)
 
 #2
@@ -75,12 +83,6 @@ HA: Mean lake temperature does change with depth across all lakes.
 
 ```{r scatterplot}
 #4
-
-class(ChemPhysics$sampledate) #05/27/84
-# a factor! we will switch it
-ChemPhysics$sampledate <- as.Date(ChemPhysics$sampledate, format = "%m/%d/%y")
-class(ChemPhysics$sampledate) #now its a date!
-#view(ChemPhysics)
 
 ChemPhysics.processed <- 
   ChemPhysics %>%
@@ -168,7 +170,7 @@ summary(CPmodel)
 
 #10
 
-CPregression <- lm(data = ChemPhysics.processed, temperature_C ~ daynum + depth)
+CPregression <- lm(data = ChemPhysics.processed, temperature_C ~ year4 + daynum + depth)
 summary(CPregression)
 
 
@@ -176,8 +178,8 @@ summary(CPregression)
 
 11. What is the final set of explanatory variables that the AIC method suggests we use to predict temperature in our multiple regression? How much of the observed variance does this model explain? Is this an improvement over the model using only depth as the explanatory variable?
 
-> Answer: 
-ASK
+> Answer: (CHECK)
+year4, daynum, and depth are the three sets of explanatory variables that the AIC method suggests, as the probability for each is less than 0.05, meaning they are statistically significant. The R-squared is now 0.7412, which means the data is well-explained, but this is also the R-squared for the linear model, so that is not an improvement. 
 
 
 ---
@@ -192,13 +194,15 @@ ASK
 Chem.anova <- aov(data = ChemPhysics.processed, temperature_C ~ lakename)
 summary(Chem.anova)
 
-#results: reject null hypothesis i.e. difference between a pair of group means is statistically significant
+#results: reject null hypothesis i.e. difference between a pair of group means 
+#is statistically significant
 
 # Format ANOVA as lm
 Chem.anova2 <- lm(data = ChemPhysics.processed, temperature_C ~ lakename)
 summary(Chem.anova)
 
-#results: reject null hypothesis i.e. difference between a pair of group means is statistically significant
+#results: reject null hypothesis i.e. difference between a pair of group means 
+#is statistically significant
 
 
 ```
@@ -239,13 +243,13 @@ ChemTukey
 
 16.From the findings above, which lakes have the same mean temperature, statistically speaking, as Peter Lake? Does any lake have a mean temperature that is statistically distinct from all the other lakes?
 
->Answer: Ask about how to run this
+>Answer: (CHECK) Ward, Peter, and Paul lakes have the same mean temperature statistically speaking because they are in the same group. All groups have at least two lakes, so there is not a lake that is statistically distinct from the others. 
 
  
 
 17. If we were just looking at Peter Lake and Paul Lake. What's another test we might explore to see whether they have distinct mean temperatures? 
 
->Answer: 2 way anova? ASK
+>Answer: (CHECK) 2 sample T-test
 
 
 
@@ -259,11 +263,10 @@ ChemPhysics.processed2 <-
   filter(lakename == "Crampton Lake" | lakename == "Ward Lake") 
 view(ChemPhysics.processed2)
 
-CP.twosample <- t.test(ChemPhysics.processed2$temperature_C ~ ChemPhysics.processed2$lakename)
+CP.twosample <- t.test(ChemPhysics.processed2$temperature_C ~ 
+                         ChemPhysics.processed2$lakename)
 CP.twosample
 
 ```
 
->Answer: The p-value is 0.2649, which suggests the mean temperatures are not statistically significant in their difference.  The mean for Crampton is 15.35189 
-and the mean for Ward Lake is 14.45862. This suggests that they may actually have the same mean?
-DOES THIS MATCH 16?
+>Answer: The p-value is 0.2649, which suggests the mean temperatures are not statistically significant in their difference.  The mean for Crampton is 15.35189 and the mean for Ward Lake is 14.45862. This suggests that they may actually have the same mean, which does match my answer in 16.  
