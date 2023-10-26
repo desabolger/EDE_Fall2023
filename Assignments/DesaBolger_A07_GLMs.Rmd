@@ -1,5 +1,5 @@
 ---
-title: "Assignment 7: GLMs (Linear Regressios, ANOVA, & t-tests)"
+title: "Assignment 7: GLMs (Linear Regressions, ANOVA, & t-tests)"
 author: "Desa Bolger"
 date: "Fall 2023"
 output: pdf_document
@@ -178,8 +178,8 @@ summary(CPregression)
 
 11. What is the final set of explanatory variables that the AIC method suggests we use to predict temperature in our multiple regression? How much of the observed variance does this model explain? Is this an improvement over the model using only depth as the explanatory variable?
 
-> Answer: (CHECK)
-year4, daynum, and depth are the three sets of explanatory variables that the AIC method suggests, as the probability for each is less than 0.05, meaning they are statistically significant. The R-squared is now 0.7412, which means the data is well-explained, but this is also the R-squared for the linear model, so that is not an improvement. 
+> Answer:
+Best thing is to remove no variables, as this has the lowest AIC. The full model is the best, so we should use all three variables. year4, daynum, and depth are the three sets of explanatory variables that the AIC method suggests, + the probability for each is less than 0.05, meaning they are statistically significant. The R-squared is now 0.7412 instead of 0.7387 for the linear model, which means the data is well-explained and has improved more than when only depth was used. 
 
 
 ---
@@ -243,20 +243,19 @@ ChemTukey
 
 16.From the findings above, which lakes have the same mean temperature, statistically speaking, as Peter Lake? Does any lake have a mean temperature that is statistically distinct from all the other lakes?
 
->Answer: (CHECK) Ward, Peter, and Paul lakes have the same mean temperature statistically speaking because they are in the same group. All groups have at least two lakes, so there is not a lake that is statistically distinct from the others. 
+>Answer: Ward and Paul lakes have the same mean temperature statistically speaking because they are in the same alphabetical group (group c). All groups have at least two lakes in each alphabetical group, so there is not a lake that is statistically distinct from all of the others. 
 
  
 
 17. If we were just looking at Peter Lake and Paul Lake. What's another test we might explore to see whether they have distinct mean temperatures? 
 
->Answer: (CHECK) 2 sample T-test
+>Answer: 2 sample T-test
 
 
 
 18. Wrangle the July data to include only records for Crampton Lake and Ward Lake. Run the two-sample T-test on these data to determine whether their July temperature are same or different. What does the test say? Are the mean temperatures for the lakes equal? Does that match you answer for part 16?
 
 ```{r t.test}
-# ASK for answer
 
 ChemPhysics.processed2 <- 
   ChemPhysics.processed %>%
@@ -269,4 +268,4 @@ CP.twosample
 
 ```
 
->Answer: The p-value is 0.2649, which suggests the mean temperatures are not statistically significant in their difference.  The mean for Crampton is 15.35189 and the mean for Ward Lake is 14.45862. This suggests that they may actually have the same mean, which does match my answer in 16.  
+>Answer: The p-value is 0.2649, which suggests the mean temperatures are not statistically significant in their difference.  The mean for Crampton is 15.35189 and the mean for Ward Lake is 14.45862. This suggests that they may actually have the same mean, which does match my answer in 16, since they were both in group B.  
