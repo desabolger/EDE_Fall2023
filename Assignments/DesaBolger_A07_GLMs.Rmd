@@ -162,17 +162,14 @@ step(CPaic)
 CPmodel <- lm(data = ChemPhysics.processed, temperature_C ~ year4 + daynum + depth)
 summary(CPmodel)
 
-#Best thing is to remove no variables, as this has the lowest AIC. 
+#Best thing is to remove no variables, as this has the lowest AIC. The full model
+#the best, so we should use all three variables.
 
 
-#10 ASK about printing
+#10
 
 CPregression <- lm(data = ChemPhysics.processed, temperature_C ~ daynum + depth)
 summary(CPregression)
-
-par(mfrow = c(2,2), mar=c(4,4,4,4))
-plot(CPregression)
-par(mfrow = c(1,1))
 
 
 ```
@@ -235,8 +232,8 @@ ggplot(ChemPhysics.processed, aes(x = depth, y = temperature_C, color = lakename
 
 TukeyHSD(Chem.anova)
 
-ChemTukey <- HSD.test(ChemPhysics.processed, "lakename", group = TRUE)
-view(ChemTukey)
+HSD.test(Chem.anova, "lakename", group = TRUE)
+
 
 ```
 
