@@ -137,7 +137,7 @@ EnoDischarge.late_Components <- mutate(EnoDischarge.late_Components,
 
 # Visualize how the trend maps onto the data
 ggplot(EnoDischarge.late_Components) +
-  geom_line(aes(y = Observed, x = Date),  size = 0.25) +
+  geom_line(aes(y = DAILY_AQI_VALUE, x = Date),  size = 0.25) +
   geom_line(aes(y = trend, x = Date), color = "#c13d75ff") +
   geom_hline(yintercept = 0, lty = 2) +
   ylab(expression("Discharge (ft"^3*"/s)"))
