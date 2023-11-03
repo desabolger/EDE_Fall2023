@@ -1,6 +1,6 @@
 ---
 title: "Assignment 8: Time Series Analysis"
-author: "Student Name"
+author: "Desa Bolger"
 date: "Fall 2023"
 output: pdf_document
 geometry: margin=2.54cm
@@ -28,6 +28,33 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 
 ```{r}
 
+here()
+
+library(zoo) 
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(here)
+library(ggthemes)
+#install.packages("Kendall")
+library(Kendall)
+#install.packages("tseries")
+library(tseries)
+#install.packages("trend")
+library(trend)
+
+desa_theme <- theme_base() + 
+  theme(line = element_line(color='black',linewidth =.5),
+        text = element_text(color='black'),
+        panel.grid.major =  element_line(color='black', linewidth = .5),
+        rect = element_rect(color = 'lightgrey', fill = 'lightgrey'),
+        plot.background = element_rect(color = 'lightgrey', fill = 'lightgrey'),
+        panel.background =  element_rect(color = 'lightgrey', fill = 'lightgrey'),
+        legend.background = element_rect(color='lightblue', fill = 'lightblue'),
+        legend.title = element_text(color='darkblue'))
+
+theme_set(desa_theme) #set as default
+
 ```
 
 
@@ -36,6 +63,30 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 ```{r, message = FALSE}
 #1
 
+NC2010 <- read.csv(here("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2010_raw.csv"),
+                        stringsAsFactors = TRUE)
+NC2011 <- read.csv(here("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2011_raw.csv"),
+                        stringsAsFactors = TRUE)
+NC2012 <- read.csv(here("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2012_raw.csv"),
+                        stringsAsFactors = TRUE)
+NC2013 <- read.csv(here("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2013_raw.csv"),
+                        stringsAsFactors = TRUE)
+NC2014 <- read.csv(here("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2014_raw.csv"),
+                        stringsAsFactors = TRUE)
+NC2015 <- read.csv(here("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2015_raw.csv"),
+                        stringsAsFactors = TRUE)
+NC2016 <- read.csv(here("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2016_raw.csv"),
+                        stringsAsFactors = TRUE)
+NC2017 <- read.csv(here("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2017_raw.csv"),
+                        stringsAsFactors = TRUE)
+NC2018 <- read.csv(here("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2018_raw.csv"),
+                        stringsAsFactors = TRUE)
+NC2019 <- read.csv(here("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2019_raw.csv"),
+                        stringsAsFactors = TRUE)
+GaringerOzone <- rbind(NC2010, NC2011, NC2012, NC2013, NC2014, NC2015, NC2016, NC2017, NC2018, NC2019)
+#view(GaringerOzone)
+dim(GaringerOzone)
+#dim work
 ```
 
 ## Wrangle
@@ -51,7 +102,19 @@ This exercise accompanies the lessons in Environmental Data Analytics on general
 ```{r}
 # 3
 
+class(GaringerOzone$Date) #05/27/84 01/01/2010
+
+# a factor! we will switch it
+GaringerOzone$Date <- as.Date(GaringerOzone$Date, format = "%m/%d/%Y")
+class(GaringerOzone$Date) #now its a date!
+
 # 4
+
+GaringerOzone.processed <- 
+  GaringerOzone %>%
+  select(Date, Daily.Max.8.hour.Ozone.Concentration, DAILY_AQI_VALUE)
+
+view(GaringerOzone.processed)
 
 # 5
 
