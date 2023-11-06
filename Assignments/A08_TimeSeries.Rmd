@@ -84,10 +84,11 @@ NC2018 <- read.csv(here("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2018_raw.
                         stringsAsFactors = TRUE)
 NC2019 <- read.csv(here("Data/Raw/Ozone_TimeSeries/EPAair_O3_GaringerNC2019_raw.csv"),
                         stringsAsFactors = TRUE)
-GaringerOzone <- rbind(NC2010, NC2011, NC2012, NC2013, NC2014, NC2015, NC2016, NC2017, NC2018, NC2019)
+GaringerOzone <- rbind(NC2010, NC2011, NC2012, NC2013, NC2014, NC2015, NC2016, 
+                       NC2017, NC2018, NC2019)
 #view(GaringerOzone)
 dim(GaringerOzone)
-#dim work
+#dim works 3580 x 20 
 ```
 
 ## Wrangle
@@ -115,17 +116,16 @@ GaringerOzone.processed <-
   GaringerOzone %>%
   select(Date, Daily.Max.8.hour.Ozone.Concentration, DAILY_AQI_VALUE)
 
-view(GaringerOzone.processed)
-
 # 5
 
-Days <- as.data.frame(seq.Date(from = as.Date("2010/1/1"), to = as.Date("2019/12/31"), by = "day"))
+Days <- as.data.frame(seq.Date(from = as.Date("2010/1/1"), 
+                               to = as.Date("2019/12/31"), by = "day"))
 names(Days)[1] <- "Date"
-view(Days)
 
 # 6
 GaringerOzone <- left_join(Days, GaringerOzone.processed)
 dim(GaringerOzone)
+#3652 x 3
 ```
 
 ## Visualize
@@ -138,7 +138,6 @@ dim(GaringerOzone)
 ggplot(GaringerOzone, aes(x = Date, y = Daily.Max.8.hour.Ozone.Concentration)) +
   geom_line() +
   geom_smooth(method = "lm")+
-  #geom_smooth(aes( x = Date, y = Daily.Max.8.hour.Ozone.Concentration, method = "lm", smooth = FALSE)) +
   ylab(expression("Ozone Concentration in PPM"))
 
 
@@ -155,12 +154,16 @@ Study question: Have ozone concentrations changed over the 2010s at this station
 ```{r}
 #8
 
-GaringerOzone$Daily.Max.8.hour.Ozone.Concentration <- na.approx(GaringerOzone$Daily.Max.8.hour.Ozone.Concentration)
-view(GaringerOzone)
+GaringerOzone$Daily.Max.8.hour.Ozone.Concentration <- 
+  na.approx(GaringerOzone$Daily.Max.8.hour.Ozone.Concentration)
+#view(GaringerOzone)
 
 ```
 
-> Answer: 
+> Answer: We didn't use Spline because that would be quadratic and not linear. 
+We didn't use Piecewise because missing data is assumed to be equal to its neighbor,
+but we wanted linear because it would draw a straight line to determine missing 
+points. 
 
 
 9. Create a new data frame called `GaringerOzone.monthly` that contains aggregated data: mean ozone concentrations for each month. In your pipe, you will need to first add columns for year and month to form the groupings. In a separate line of code, create a new Date column with each month-year combination being set as the first day of the month (this is for graphing purposes only)
@@ -177,7 +180,7 @@ GaringerOzone.monthly <-
   mutate("Month_Year" = my(paste0(Month, "-", Year)))
 
 
-view(GaringerOzone.monthly)
+#view(GaringerOzone.monthly)
 
 
 
@@ -203,14 +206,17 @@ GaringerOzone.monthly.ts <- ts(GaringerOzone.monthly$meanConcentration,
 11. Decompose the daily and the monthly time series objects and plot the components using the `plot()` function.
 
 ```{r}
-#11 ask about periodic and if theres more 
-GaringerOzone.dailyDecomposed <- stl(GaringerOzone.daily.ts, s.window = "periodic")
+#11 
+GaringerOzone.dailyDecomposed <- stl(GaringerOzone.daily.ts, 
+                                     s.window = "periodic")
 
 # Visualize the decomposed series. 
 plot(GaringerOzone.dailyDecomposed)
 
-GaringerOzone.monthlyDecomposed <- stl(GaringerOzone.monthly.ts, s.window = "periodic")
 
+
+GaringerOzone.monthlyDecomposed <- stl(GaringerOzone.monthly.ts, 
+                                       s.window = "periodic")
 # Visualize the decomposed series. 
 plot(GaringerOzone.monthlyDecomposed)
 
@@ -222,7 +228,7 @@ plot(GaringerOzone.monthlyDecomposed)
 12. Run a monotonic trend analysis for the monthly Ozone series. In this case the seasonal Mann-Kendall is most appropriate; why is this?
 
 ```{r}
-#12 anything else?
+#12
 
 GaringerOzone.monthly1 <- Kendall::SeasonalMannKendall(GaringerOzone.monthly.ts)
 
@@ -234,7 +240,10 @@ summary(GaringerOzone.monthly1)
 
 ```
 
-> Answer: (add more) no seasonality, non-parametric, missing data allowed. Function: `MannKendall()` (package: Kendall)
+> Answer: We used the seasonal Mann-Kendall because it is clear that there is a
+seasonal pattern.  The regular Mann-Kendall, Spearman Rho, Augmented Dickey 
+Fuller, and linear regression do not do well with seasonal data.
+
 
 13. Create a plot depicting mean monthly ozone concentrations over time, with both a geom_point and a geom_line layer. Edit your axis labels accordingly.
 
@@ -263,20 +272,23 @@ ggplot(GaringerOzone.monthly, aes(x = Month_Year, y = meanConcentration)) +
 #15
 
 # Generate the decomposition
-GaringerOzone.monthlyDecomposed <- stl(GaringerOzone.monthly.ts, s.window = "periodic")
+GaringerOzone.monthlyDecomposed <- stl(GaringerOzone.monthly.ts, 
+                                       s.window = "periodic")
 
 # Visualize the decomposed series. 
 plot(GaringerOzone.monthlyDecomposed )
 
 # We can extract the components and turn them into data frames
-GaringerOzone.monthlyDecomposed_Components <- as.data.frame(GaringerOzone.monthlyDecomposed$time.series[,1:3])
+GaringerOzone.monthlyDecomposed_Components <- 
+  as.data.frame(GaringerOzone.monthlyDecomposed$time.series[,1:3])
 
-GaringerOzone.monthlyDecomposed_Components <- mutate(GaringerOzone.monthlyDecomposed_Components,
+GaringerOzone.monthlyDecomposed_Components <- 
+  mutate(GaringerOzone.monthlyDecomposed_Components,
         Observed = GaringerOzone.monthly$meanConcentration,     
         Date = GaringerOzone.monthly$Month_Year,
         Nonseasonal = Observed - seasonal)
 
-  view(GaringerOzone.monthlyDecomposed_Components)
+ #view(GaringerOzone.monthlyDecomposed_Components)
 
 #16
 a_month <- month(first(GaringerOzone.monthlyDecomposed_Components$Date))
