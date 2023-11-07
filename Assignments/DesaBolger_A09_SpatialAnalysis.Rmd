@@ -1,6 +1,6 @@
 ---
 title: "Assignment 9: Spatial Analysis in R"
-author: "Student Name"
+author: "Desa Bolger"
 output: html_document
 ---
 
@@ -26,10 +26,27 @@ This exercise accompanies the lessons in Environmental Data Analytics (ENV872L) 
 
 ```{r Prepare workspace, error=F, warning=F}
 #1. 
+#Import the tidyverse library 
+library(tidyverse, quietly = TRUE)
+library(lubridate); library(here)
+
+#install.packages('sf')
+library(sf)
+#install.packages('leaflet')
+library(leaflet)
+library(ggplot2)
+#install.packages('mapview')
+library(mapview); mapviewOptions(fgb = FALSE)
+
+#Disable on-the-fly projections
+sf::sf_use_s2(FALSE)
+
 
 
 #2. 
+here()
 
+#looks good!
 
 ```
 
@@ -44,11 +61,21 @@ In this exercise, we will be exploring stream gage height data in Nebraska corre
 ```{r Read the county data into an sf dataframe}
 #3. Read in Counties shapefile into an sf dataframe, filtering for just NE counties
 
+GageHeight <- st_read(here('Data/Spatial/cb_2018_us_county_20m.shp')) %>% 
+  filter(STATEFP == 31)
+  view(GageHeight)
+
 
 #4. Reveal the CRS of the counties features
 
+GageHeight$geometry[1]
+#NAD83. 
+
 
 #5. Plot the data
+ggplot(data=GageHeight) + geom_sf()
+
+#is this all?
 
 ```
 
