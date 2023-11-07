@@ -76,14 +76,13 @@ st_crs(GageHeight1)
 #5. Plot the data
 ggplot(data=GageHeight1) + geom_sf()
 
-#is this all?
-
 ```
 
 6. What is the EPSG code of the Counties dataset? Is this a geographic or a projected coordinate reference system? (Or, does this CRS use angular or planar coordinate units?) To what datum is this CRS associated? (Tip: look for the EPSG code on <https://spatialreference.org> and examine the link for "Well Known Text as HTML" or "Human-Readable OGC WKT"...)
 
 > ANSWER: 
-> EPSG:4269, because it is NAD83.  (answer the rest of these)
+> EPSG:4269, because it is NAD83, which is it's datum.  
+It is geographic coordinate system. 
 
 
 ### Read in gage locations csv as a dataframe, then display the column names it contains
@@ -113,9 +112,6 @@ colnames(GageLocation)
 
 9. What columns in the dataset contain the x and y coordinate values, respectively?  
 > ANSWER: X is the longitude (dec_long_va) and Y is the latitude (dec_lat_va)
-(double check)
-
-> 
 
 
 ### Convert the dataframe to a spatial features ("sf") dataframe
@@ -157,7 +153,7 @@ colnames(GageLocation)
 ```{r Plot the spatial features}
 #13. Plot the gage locations atop the county features
 
-#GageLocation <- st_as_sfc(GageLocation,crs=102008)
+
 st_crs(GageHeight1) #4269
 st_crs(GageLocation) #4269
 
@@ -229,8 +225,9 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 
 ggplot() + 
   geom_sf(data=GageHeight1, fill = 'lightgreen', color = 'darkgreen') + 
-  geom_sf(data = Merged, aes(size = gage_ht))
-
+  geom_sf(data = Merged, aes(size = gage_ht))+
+  ggtitle("NWIS Gage Locations in Nebraska")+
+  labs(subtitle = "Desa Bolger", size = "Gage Height (m)")
 
 ```
 
@@ -260,7 +257,9 @@ class(utm_location)
 #21 Plot the data HELP is this different
 ggplot() +
   geom_sf(data = utm_county,color='blue') + 
-  geom_sf(data = utm_location,color='red') 
+  geom_sf(data = utm_location,color='red') +
+  ggtitle("NWIS Gage Locations in Nebraska")+
+  labs(subtitle = "Desa Bolger",)
 
 ```
 
