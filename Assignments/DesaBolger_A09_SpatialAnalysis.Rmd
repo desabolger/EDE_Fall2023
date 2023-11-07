@@ -244,19 +244,17 @@ Up next we will do some spatial analysis with our data. To prepare for this, we 
 ```{r spatial analysis}
 #20 Transform the counties and gage location datasets to UTM Zone 14
 
-#Upgrade to a simple feature geometry column by adding a crs 
-utm_county <- st_sfc(GageHeight1,crs=32614)
+#Upgrade to a simple feature geometry column by adding a crs #HELP
+utm_county <- st_as_sfc(GageHeight1,crs=32614)
 class(utm_county)
 mapview(utm_county)
 
 #is this my gage SF, help
-utm_location <- st_sfc(GageLocation,crs=32614)
+utm_location <- st_as_sfc(GageLocation,crs=32614)
 class(utm_location)
 mapview(utm_location)
 
 #21 Plot the data
-
-
 ggplot() +
   geom_sf(data = utm_county,color='blue') + 
   geom_sf(data = utm_location,color='red') 
@@ -276,13 +274,23 @@ Now let's zoom into a particular county and examine the gages located there.
  * and the gage sites in that county
 
 ```{r spatial selection}
+####Uuuuuuhhhh
+
+
+
 #22 Select the county
+Dawson <- GageHeight1 %>%
+  filter(NAME == "Dawson")
+
+DawsonUTM <- st_as_sfc(Dawson,crs=32614)
+class(DawsonUTM)
+mapview(DawsonUTM)
 
 
 #23 Spatially select gages within the selected county
 
-neuse_intersect <- y %>%
-  st_filter(neuse_sf)
+DawsonGages <- DawsonUTM %>%
+  within(GageLocation)
 
 #24 Plot
 
