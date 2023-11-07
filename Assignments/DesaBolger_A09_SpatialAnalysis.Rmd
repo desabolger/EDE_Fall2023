@@ -61,19 +61,19 @@ In this exercise, we will be exploring stream gage height data in Nebraska corre
 ```{r Read the county data into an sf dataframe}
 #3. Read in Counties shapefile into an sf dataframe, filtering for just NE counties
 
-GageHeight <- st_read(here('Data/Spatial/cb_2018_us_county_20m.shp')) %>% 
+GageHeight1 <- st_read(here('Data/Spatial/cb_2018_us_county_20m.shp')) %>% 
   filter(STATEFP == 31)
-  view(GageHeight)
+  view(GageHeight1)
 
 
 #4. Reveal the CRS of the counties features
 
-GageHeight$geometry[1]
+GageHeight1$geometry[1]
 #NAD83. 
 
 
 #5. Plot the data
-ggplot(data=GageHeight) + geom_sf()
+ggplot(data=GageHeight1) + geom_sf()
 
 #is this all?
 
@@ -125,11 +125,13 @@ colnames(GageLocation)
 ```{r Convert dataframe to sf dataframe}
 #10. Convert to an sf object
 
-#check
-GageLocation <- st_as_sf(x = GageLocation,                         
+#check HELp
+GageLocation <- st_as_sf(x = GageLocation,    
            coords = c("dec_long_va", "dec_lat_va"),
            crs = 102008)
 mapview(GageLocation)
+
+st_crs(GageLocation) #but its now 32614 HELP
 
 
 #11. Re-examine the column names
@@ -154,10 +156,13 @@ colnames(GageLocation)
 ```{r Plot the spatial features}
 #13. Plot the gage locations atop the county features
 
+#GageLocation <- st_as_sfc(GageLocation,crs=102008)
+st_crs(GageHeight1) #NAD83
+st_crs(GageLocation) #EPSG 32614
+
 ggplot() + 
-  geom_sf(data=GageHeight,aes(fill = E_POV),alpha=0.3) + 
-  scale_fill_gradient2(low="red",high="blue",midpoint = 60000) + 
-  geom_sf(data=GageLocation)
+  geom_sf(data=GageHeight1, fill = 'grey', color = 'black') + 
+  geom_sf(data=GageLocation, fill = "purple", color = 'black')
 
 #GET HELP
 
@@ -192,14 +197,19 @@ class(GageHeight2$site_no)
 colnames(GageHeight2)
 
 #16. Join the flow data to our NWIS gage location spatial dataframe
-#is this col left?
+
+#is this col left? site no? gage location
+
+Merged <- merge(GageHeight2, GageLocation, by.x = "site_no", by.y = "site_no")
+names(Merged) 
 
 #17. Show the column names of the joined dataset
 
-colnames(newDF)
+colnames(Merged)
 #18. Show the dimensions of this joined dataset
 
-dim(newDF)
+dim(Merged)
+#136 x 9
 ```
 
 ### Map the pattern of gage height data
@@ -210,6 +220,12 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 
 ```{r map gage sites}
 #Map the points, sized by gage height
+
+#help. need to finish --- is this where i should be doing this
+Merged <- st_transform(Merged,32617)
+
+mapview(GageHeight1, col.regions = "purple")+
+  mapview(Merged, col.regions = "orange")
 
 
 ```
@@ -229,9 +245,27 @@ Up next we will do some spatial analysis with our data. To prepare for this, we 
 ```{r spatial analysis}
 #20 Transform the counties and gage location datasets to UTM Zone 14
 
+#Upgrade to a simple feature geometry column by adding a crs 
+GageHeight1 <- st_as_sfc(GageHeight1,crs=32614)
+class(GageHeight1)
+mapview(GageHeight1)
+
+#is this my gage SF, help
+GageLocation <- st_sfc(GageLocation,crs=32614)
+class(GageLocation)
+mapview(GageLocation)
 
 #21 Plot the data
+mapview(GageHeight1)+
+mapview(GageLocation)
 
+st_crs(GageHeight1) #NAD83
+st_crs(GageLocation) #32614
+
+
+ggplot() +
+  geom_sf(data = GageHeight1,color='blue') + 
+  geom_sf(data = GageLocation,color='red') 
 
 ```
 
@@ -253,6 +287,8 @@ Now let's zoom into a particular county and examine the gages located there.
 
 #23 Spatially select gages within the selected county
 
+neuse_intersect <- y %>%
+  st_filter(neuse_sf)
 
 #24 Plot
 
