@@ -96,13 +96,11 @@ Next we'll read in some USGS/NWIS gage location data added to the `Data/Raw` fol
 ```{r Read in USGS Gage Locations}
 #7. Read in gage locations csv as a dataframe
 
-# is this a standard data frame?
 GageLocation <- read.csv(here("Data/Raw/NWIS_SiteInfo_NE_RAW.csv"),
                         stringsAsFactors = TRUE)
 #view(GageLocation)
 
 class(GageLocation$site_no) 
-# a factor! we will switch it
 GageLocation$site_no <- as.factor(GageLocation$site_no)
 class(GageLocation$site_no) 
 #8. Reveal the names of the columns
@@ -153,9 +151,8 @@ colnames(GageLocation)
 ```{r Plot the spatial features}
 #13. Plot the gage locations atop the county features
 
-
-st_crs(GageHeight1) #4269
-st_crs(GageLocation) #4269
+#st_crs(GageHeight1) #4269
+#st_crs(GageLocation) #4269
 
 ggplot() + 
   geom_sf(data=GageHeight1, fill = 'grey', color = 'black') + 
@@ -185,10 +182,8 @@ Lastly, we want to attach some gage height data to our site locations. I've cons
 #14. Read the site flow data into a data frame
 GageHeight2 <- read.csv(here("Data/Raw/NWIS_SiteFlowData_NE_RAW.csv"),
                         stringsAsFactors = TRUE)
-#view(GageHeight2)
 
 class(GageHeight2$site_no) 
-# a factor! we will switch it
 GageHeight2$site_no <- as.factor(GageHeight2$site_no)
 class(GageHeight2$site_no) 
 
@@ -221,8 +216,6 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 ```{r map gage sites}
 #Map the points, sized by gage height
 
-#HELP - do I need title and such again?
-
 ggplot() + 
   geom_sf(data=GageHeight1, fill = 'lightgreen', color = 'darkgreen') + 
   geom_sf(data = Merged, aes(size = gage_ht))+
@@ -246,11 +239,10 @@ Up next we will do some spatial analysis with our data. To prepare for this, we 
 ```{r spatial analysis}
 #20 Transform the counties and gage location datasets to UTM Zone 14
 
-#Upgrade to a simple feature geometry column by adding a crs #HELP
+#Upgrade to a simple feature geometry column by adding a crs
 utm_county <- st_as_sfc(GageHeight1,crs=32614)
 class(utm_county)
 
-#is this my gage SF, help
 utm_location <- st_as_sfc(GageLocation,crs=32614)
 class(utm_location)
 
@@ -276,7 +268,6 @@ Now let's zoom into a particular county and examine the gages located there.
  * and the gage sites in that county
 
 ```{r spatial selection}
-#not exactly....
 
 #22 Select the county
 Dawson <- GageHeight1 %>%
@@ -286,12 +277,14 @@ Dawson <- GageHeight1 %>%
 
 DawsonGages <- GageLocation %>%
   st_filter(Dawson)
-mapview(DawsonGages)
-#24 Plot #do i need titles in all?
+#mapview(DawsonGages)
+#24 Plot 
 ggplot() +
   geom_sf(data = utm_county,color='black') + 
   geom_sf(data = Dawson, fill = 'purple', color = "blue")+
-  geom_sf(data = DawsonGages, color='darkblue')
+  geom_sf(data = DawsonGages, color='darkblue')+
+  ggtitle("NWIS Gage Locations in Dawson County, NE")+
+  labs(subtitle = "Desa Bolger",)
   
 
 
