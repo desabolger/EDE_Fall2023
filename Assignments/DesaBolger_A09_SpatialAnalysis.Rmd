@@ -112,7 +112,9 @@ colnames(GageLocation)
 ```
 
 9. What columns in the dataset contain the x and y coordinate values, respectively?  
-> ANSWER:lat is y and long is x. 
+> ANSWER: X is the longitude (dec_long_va) and Y is the latitude (dec_lat_va)
+(double check)
+
 > 
 
 
@@ -142,7 +144,7 @@ colnames(GageLocation)
 12. What new field(s) appear in the sf dataframe created? What field(s), if any, disappeared?
 
 >ANSWER: 
-> Geometry appeared, "dec_long_va", "dec_lat_va" disappeared....
+> Geometry appeared, "dec_long_va" and "dec_lat_va" disappeared....
 
 
 ### Plot the gage locations on top of the counties
@@ -161,7 +163,10 @@ st_crs(GageLocation) #4269
 
 ggplot() + 
   geom_sf(data=GageHeight1, fill = 'grey', color = 'black') + 
-  geom_sf(data=GageLocation, fill = "purple", color = 'purple')
+  geom_sf(data=GageLocation, fill = "purple", color = 'purple')+
+  ggtitle("NWIS Gage Locations in Nebraska")+
+  labs(subtitle = "Desa Bolger",)
+  
 
 
 ```
@@ -220,10 +225,10 @@ Now we can examine where the flooding appears most acute by visualizing gage hei
 ```{r map gage sites}
 #Map the points, sized by gage height
 
-#help. need to finish --- is this where i should be doing this
+#HELP - do I need title and such again?
 
 ggplot() + 
-  geom_sf(data=GageHeight1, fill = 'grey', color = 'black') + 
+  geom_sf(data=GageHeight1, fill = 'lightgreen', color = 'darkgreen') + 
   geom_sf(data = Merged, aes(size = gage_ht))
 
 
@@ -247,14 +252,12 @@ Up next we will do some spatial analysis with our data. To prepare for this, we 
 #Upgrade to a simple feature geometry column by adding a crs #HELP
 utm_county <- st_as_sfc(GageHeight1,crs=32614)
 class(utm_county)
-mapview(utm_county)
 
 #is this my gage SF, help
 utm_location <- st_as_sfc(GageLocation,crs=32614)
 class(utm_location)
-mapview(utm_location)
 
-#21 Plot the data
+#21 Plot the data HELP is this different
 ggplot() +
   geom_sf(data = utm_county,color='blue') + 
   geom_sf(data = utm_location,color='red') 
@@ -274,26 +277,23 @@ Now let's zoom into a particular county and examine the gages located there.
  * and the gage sites in that county
 
 ```{r spatial selection}
-####Uuuuuuhhhh
-
-
+#not exactly....
 
 #22 Select the county
 Dawson <- GageHeight1 %>%
   filter(NAME == "Dawson")
 
-DawsonUTM <- st_as_sfc(Dawson,crs=32614)
-class(DawsonUTM)
-mapview(DawsonUTM)
-
-
 #23 Spatially select gages within the selected county
 
-DawsonGages <- DawsonUTM %>%
-  within(GageLocation)
-
-#24 Plot
-
+DawsonGages <- GageLocation %>%
+  st_filter(Dawson)
+mapview(DawsonGages)
+#24 Plot #do i need titles in all?
+ggplot() +
+  geom_sf(data = utm_county,color='black') + 
+  geom_sf(data = Dawson, fill = 'purple', color = "blue")+
+  geom_sf(data = DawsonGages, color='darkblue')
+  
 
 
 ```
