@@ -39,8 +39,7 @@ here()
 
 #from class notes
 mytheme <- theme_classic() +
-  theme(axis.text = element_text(color = "black"), 
-        legend.position = "top")
+  theme(axis.text = element_text(color = "black"))
 theme_set(mytheme)
 ```
 
@@ -52,10 +51,9 @@ theme_set(mytheme)
 Indicate this website as the as the URL to be scraped. (In other words, read the contents into an `rvest` webpage object.)
 
 ```{r set.the.scraping.website}
-#2 is this all
-webpage <- read_html('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2022')
-webpage
-
+#2
+webpage <- read_html(
+  'https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2022')
 
 ```
 
@@ -79,31 +77,30 @@ In the code chunk below scrape these values, assigning them to four separate var
 Water_System_Name <- webpage %>% 
   html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") %>% 
   html_text()
-Water_System_Name
 
 #PWSID
 PWSID <- webpage %>% 
   html_nodes("td tr:nth-child(1) td:nth-child(5)") %>% 
   html_text()
-PWSID
+
 
 #Ownership
 Ownership <- webpage %>% 
   html_nodes("div+ table tr:nth-child(2) td:nth-child(4)") %>% 
   html_text()
-Ownership
+
 
 #VECTOR
 Vector <- webpage %>% 
   html_nodes("th~ td+ td") %>% 
   html_text()
-Vector
+
 
 #MONTH
 Month <- webpage %>% 
   html_nodes(".fancy-table:nth-child(31) tr+ tr th") %>% 
   html_text()
-Month
+
 
 
 ```
@@ -120,7 +117,7 @@ Month
 ```{r create.a.dataframe.from.scraped.data}
 #4 
 df_withdrawals <- data.frame("Month" = Month,
-                             "Year" = rep(2022,12), #is this right
+                             "Year" = rep(2022,12), 
                              "PWSID" = PWSID, 
                              "Water_System_Name" = Water_System_Name,
                              "Ownership" = Ownership,
@@ -131,7 +128,9 @@ df_withdrawals <- df_withdrawals %>%
          Date = my(paste(Month,"-",Year)))
 
 
-df_withdrawals <- df_withdrawals[order(as.Date(df_withdrawals$Date, format="%Y/%m/%d")),]
+df_withdrawals <- df_withdrawals[order(as.Date(df_withdrawals$Date, 
+                                               format="%Y/%m/%d")),]
+df_withdrawals$Vector <- as.numeric(df_withdrawals$Vector)
 
 
 #5 
@@ -139,9 +138,9 @@ df_withdrawals <- df_withdrawals[order(as.Date(df_withdrawals$Date, format="%Y/%
 ggplot(df_withdrawals, aes(x=Date, y=Vector)) + 
   geom_point() +
   geom_path(group = 1) +
-  labs(title = paste("2022 Max daily withdrawals", Water_System_Name),
-       subtitle = Ownership, #confused on order
-       y="Withdrawal (mgd)", #fix unit
+  labs(title = paste("2022 Max Daily Withdrawals", Water_System_Name),
+       subtitle = Ownership,
+       y="Max Daily Use (MGD)",
        x="Date") 
 
 ```
@@ -175,7 +174,7 @@ Month <- c("Jan", "May", "Sep", "Feb", "Jun", "Oct", "Mar", "Jul", "Nov", "Apr",
 
 #Construct a dataframe from the scraped data
 df_withdrawals <- data.frame("Month" = Month,
-                             "Year" = the_year, #is this right
+                             "Year" = the_year,
                              "PWSID" = PWSID,
                              "Water_System_Name" = Water_System_Name,
                              "Ownership" = Ownership,
@@ -185,16 +184,18 @@ df_withdrawals <- df_withdrawals %>%
   mutate(
          Date = my(paste(Month,"-",Year)))
 
-df_withdrawals <- df_withdrawals[order(as.Date(df_withdrawals$Date, format="%Y/%m/%d")),]
+df_withdrawals <- df_withdrawals[order(as.Date(df_withdrawals$Date, 
+                                               format="%Y/%m/%d")),]
+df_withdrawals$Vector <- as.numeric(df_withdrawals$Vector)
 
 plotting <- ggplot(df_withdrawals, aes(x=Date, y=Vector)) + 
   geom_point() +
   geom_path(group =1) +
-  labs(title = paste(the_year,"Max daily withdrawals", Water_System_Name),
-       subtitle = Ownership, #confused on order
-       y="Withdrawal (mgd)", #fix unit
+  labs(title = paste(the_year,"Max Daily Withdrawals", Water_System_Name),
+       subtitle = Ownership, 
+       y="Max Daily Use (MGD)",
        x="Date") 
-  Sys.sleep(1) #uncomment this if you are doing bulk scraping!
+  Sys.sleep(1) 
 
 print(plotting)
   return(df_withdrawals)
@@ -207,7 +208,6 @@ print(plotting)
 ```{r fetch.and.plot.Durham.2015.data}
 #7 
 NewSet <-scrape.it("03-32-010", 2015) 
-
 ```
 
 8. Use the function above to extract data for Asheville (PWSID = 01-11-010) in 2015. Combine this data with the Durham data collected above and create a plot that compares Asheville's to Durham's water withdrawals.
@@ -215,20 +215,26 @@ NewSet <-scrape.it("03-32-010", 2015)
 ```{r fetch.and.plot.Asheville.2015.data}
 #8 
 NewSet <-scrape.it("03-32-010", 2015) 
+NewSet$Vector <- as.numeric(NewSet$Vector)
 
 Asheville <-scrape.it("01-11-010", 2015)  
+Asheville$Vector <- as.numeric(Asheville$Vector)
 
 
 ggplot() + 
-  geom_point(NewSet, mapping = aes(x=Date, y=Vector), color = 'blue') +
-  geom_path(NewSet, mapping = aes(x=Date, y=Vector, group = 1), color = "blue") +
-  geom_point(Asheville, mapping = aes(x=Date, y=Vector), color = 'green') +
-  geom_path(Asheville, mapping = aes(x=Date, y=Vector, group = 1), color = "green") +
-  labs(title = paste(the_year,"Max daily withdrawals from ", Asheville$Water_System_Name, " and ", NewSet$Water_System_Name),
-       subtitle = paste(Asheville$Water_System_Name, " & ", NewSet$Water_System_Name), #confused on order
-       y="Withdrawal (mgd)", #fix unit
-       x="Date") 
-
+  geom_point(NewSet, mapping = aes(x=Date, y=Vector), 
+             color = "03-32-010") +
+  geom_path(NewSet, mapping = aes(x=Date, y=Vector, group = 1), 
+            color = "03-32-010") +
+  geom_point(Asheville, mapping = aes(x=Date, y=Vector), 
+             color = "01-11-010") +
+  geom_path(Asheville, mapping = aes(x=Date, y=Vector, group = 1), 
+            color = "01-11-010") +
+  labs(title = paste(NewSet$Year, "Max Daily Withdrawals from", 
+  Asheville$Water_System_Name, "(Black) and", NewSet$Water_System_Name, 
+  "(Green)"),
+       y="Max Daily Use (MGD)",
+       x="Date")
 #add legend
 
 
@@ -261,11 +267,16 @@ df_2020 <- bind_rows(dfs_2020)
 
 #Plot
 ggplot(df_2020,aes(y = Vector, x=Date)) +
-  geom_path(group = 1)
+  geom_path(group = 1)+
+    geom_smooth(method="loess",se=FALSE) +
+  labs(title = paste(Asheville$Year, "Max Daily Withdrawals from", 
+  Asheville$Water_System_Name),
+       y="Max Daily Use (MGD)",
+       x="Year")
+  
 
 
 ```
 
 Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time?
-> Answer:
-> It looks like it is increasing over time. 
+> Answer: It looks like it is increasing over time, though we would want to run statistics to get a better idea.  
