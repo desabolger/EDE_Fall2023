@@ -93,7 +93,6 @@ Ownership <- webpage %>%
   html_text()
 Ownership
 
-
 #VECTOR
 Vector <- webpage %>% 
   html_nodes("th~ td+ td") %>% 
@@ -130,18 +129,20 @@ df_withdrawals <- data.frame("Month" = Month,
 df_withdrawals <- df_withdrawals %>% 
   mutate(
          Date = my(paste(Month,"-",Year)))
-  #day = 1?
+
+
+df_withdrawals <- df_withdrawals[order(as.Date(df_withdrawals$Date, format="%Y/%m/%d")),]
+
 
 #5 
 
 ggplot(df_withdrawals, aes(x=Date, y=Vector)) + 
   geom_point() +
-  geom_line() +
-  geom_smooth(method="loess",se=FALSE) +
+  geom_path(group = 1) +
   labs(title = paste("2022 Max daily withdrawals", Water_System_Name),
        subtitle = Ownership, #confused on order
        y="Withdrawal (mgd)", #fix unit
-       x="Date") #Line is not working
+       x="Date") 
 
 ```
 
@@ -154,7 +155,6 @@ scrape.it <- function(pwsid, the_year){
   
 the_base_url <- 'https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid='
 the_scrape_url <- paste0(the_base_url, pwsid, '&year=', the_year)
-#print(the_scrape_url)
 
 #Retrieve the website contents 
 the_website <- read_html(the_scrape_url)
@@ -164,14 +164,14 @@ Water_System_Name <- 'div+ table tr:nth-child(1) td:nth-child(2)'
 PWSID <- "td tr:nth-child(1) td:nth-child(5)"
 Ownership <- "div+ table tr:nth-child(2) td:nth-child(4)"
 Vector <- "th~ td+ td"
-Month <- ".fancy-table:nth-child(31) tr+ tr th"
 
 #Scrape the data items
 Water_System_Name <- the_website %>% html_nodes(Water_System_Name) %>% html_text()
 PWSID <- the_website %>% html_nodes(PWSID) %>%  html_text()
 Ownership <- the_website %>% html_nodes(Ownership) %>% html_text()
 Vector <- the_website %>% html_nodes(Vector) %>% html_text()
-Month <- the_website %>% html_nodes(Month) %>% html_text()
+Month <- c("Jan", "May", "Sep", "Feb", "Jun", "Oct", "Mar", "Jul", "Nov", "Apr", 
+           "Aug", "Dec")
 
 #Construct a dataframe from the scraped data
 df_withdrawals <- data.frame("Month" = Month,
@@ -185,6 +185,18 @@ df_withdrawals <- df_withdrawals %>%
   mutate(
          Date = my(paste(Month,"-",Year)))
 
+df_withdrawals <- df_withdrawals[order(as.Date(df_withdrawals$Date, format="%Y/%m/%d")),]
+
+plotting <- ggplot(df_withdrawals, aes(x=Date, y=Vector)) + 
+  geom_point() +
+  geom_path(group =1) +
+  labs(title = paste(the_year,"Max daily withdrawals", Water_System_Name),
+       subtitle = Ownership, #confused on order
+       y="Withdrawal (mgd)", #fix unit
+       x="Date") 
+  Sys.sleep(1) #uncomment this if you are doing bulk scraping!
+
+print(plotting)
   return(df_withdrawals)
 
 }
@@ -196,17 +208,6 @@ df_withdrawals <- df_withdrawals %>%
 #7 
 NewSet <-scrape.it("03-32-010", 2015) 
 
-#Plot 
-ggplot(NewSet, aes(x=Date, y=Vector)) + 
-  geom_point() +
-  geom_line() +
-  geom_smooth(method="loess",se=FALSE) +
-  labs(title = paste(the_year,"Max daily withdrawals", Water_System_Name),
-       subtitle = Ownership, #confused on order
-       y="Withdrawal (mgd)", #fix unit
-       x="Date") #Line is not working
-
-
 ```
 
 8. Use the function above to extract data for Asheville (PWSID = 01-11-010) in 2015. Combine this data with the Durham data collected above and create a plot that compares Asheville's to Durham's water withdrawals.
@@ -214,21 +215,21 @@ ggplot(NewSet, aes(x=Date, y=Vector)) +
 ```{r fetch.and.plot.Asheville.2015.data}
 #8 
 NewSet <-scrape.it("03-32-010", 2015) 
-view(NewSet)
-Asheville <-scrape.it("01-11-010", 2015)  #is this combining the data
+
+Asheville <-scrape.it("01-11-010", 2015)  
 
 
 ggplot() + 
   geom_point(NewSet, mapping = aes(x=Date, y=Vector), color = 'blue') +
-  geom_line(NewSet, mapping = aes(x=Date, y=Vector), color = "blue") +
+  geom_path(NewSet, mapping = aes(x=Date, y=Vector, group = 1), color = "blue") +
   geom_point(Asheville, mapping = aes(x=Date, y=Vector), color = 'green') +
-  geom_line(Asheville, mapping = aes(x=Date, y=Vector), color = "green") +
-  geom_smooth(method="loess",se=FALSE, color = "darkblue") +
-  geom_smooth(method="loess",se=FALSE, color = "darkgreen") +
+  geom_path(Asheville, mapping = aes(x=Date, y=Vector, group = 1), color = "green") +
   labs(title = paste(the_year,"Max daily withdrawals from ", Asheville$Water_System_Name, " and ", NewSet$Water_System_Name),
        subtitle = paste(Asheville$Water_System_Name, " & ", NewSet$Water_System_Name), #confused on order
        y="Withdrawal (mgd)", #fix unit
-       x="Date") #Line is not working
+       x="Date") 
+
+#add legend
 
 
 
@@ -242,10 +243,29 @@ ggplot() +
 
 ```{r fetch.and.plot.Asheville.multiyear.data }
 #9 
+#Set the inputs to scrape years 
+pwsid = "01-11-010"
+
+#Subset the facilities
+the_year<- rep(2010:2021)
+
+pwsid <-  rep.int("01-11-010", length(the_year))
+print(pwsid)
+
+#"Map" the "scrape.it" function to retrieve data for all these
+dfs_2020 <- map2(pwsid, the_year, scrape.it) 
+
+#Conflate the returned list of dataframes into a single one
+df_2020 <- bind_rows(dfs_2020)
+
+
+#Plot
+ggplot(df_2020,aes(y = Vector, x=Date)) +
+  geom_path(group = 1)
 
 
 ```
 
 Question: Just by looking at the plot (i.e. not running statistics), does Asheville have a trend in water usage over time?
 > Answer:
->
+> It looks like it is increasing over time. 
