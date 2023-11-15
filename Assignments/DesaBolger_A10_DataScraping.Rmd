@@ -1,6 +1,6 @@
 ---
 title: "Assignment 10: Data Scraping"
-author: "Student Name"
+author: "Desa Bolger"
 output: pdf_document
 ---
 
@@ -25,8 +25,23 @@ This exercise accompanies the lessons in Environmental Data Analytics on data sc
 
 ```{r 1. Project Setup, message = FALSE}
 #1 
+library(tidyverse)
+library(lubridate)
+library(viridis)
+library(here)
+library(ggplot2)
 
+#install.packages("rvest")
+library(rvest)
 
+here()
+#looks good
+
+#from class notes
+mytheme <- theme_classic() +
+  theme(axis.text = element_text(color = "black"), 
+        legend.position = "top")
+theme_set(mytheme)
 ```
 
 2. We will be scraping data from the NC DEQs Local Water Supply Planning website, specifically the Durham's 2022 Municipal Local Water Supply Plan (LWSP): 
@@ -37,7 +52,10 @@ This exercise accompanies the lessons in Environmental Data Analytics on data sc
 Indicate this website as the as the URL to be scraped. (In other words, read the contents into an `rvest` webpage object.)
 
 ```{r set.the.scraping.website}
-#2 
+#2 is this all
+webpage <- read_html('https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid=03-32-010&year=2022')
+webpage
+
 
 ```
 
@@ -57,6 +75,37 @@ In the code chunk below scrape these values, assigning them to four separate var
 
 ```{r scrape.the.data}
 #3 
+#Water system name
+Water_System_Name <- webpage %>% 
+  html_nodes("div+ table tr:nth-child(1) td:nth-child(2)") %>% 
+  html_text()
+Water_System_Name
+
+#PWSID
+PWSID <- webpage %>% 
+  html_nodes("td tr:nth-child(1) td:nth-child(5)") %>% 
+  html_text()
+PWSID
+
+#Ownership
+Ownership <- webpage %>% 
+  html_nodes("div+ table tr:nth-child(2) td:nth-child(4)") %>% 
+  html_text()
+Ownership
+
+
+#VECTOR
+Vector <- webpage %>% 
+  html_nodes("th~ td+ td") %>% 
+  html_text()
+Vector
+
+#MONTH
+Month <- webpage %>% 
+  html_nodes(".fancy-table:nth-child(31) tr+ tr th") %>% 
+  html_text()
+Month
+
 
 ```
 
@@ -71,8 +120,28 @@ In the code chunk below scrape these values, assigning them to four separate var
 
 ```{r create.a.dataframe.from.scraped.data}
 #4 
+df_withdrawals <- data.frame("Month" = Month,
+                             "Year" = rep(2022,12), #is this right
+                             "PWSID" = PWSID, 
+                             "Water_System_Name" = Water_System_Name,
+                             "Ownership" = Ownership,
+                             "Vector" = Vector) 
+
+df_withdrawals <- df_withdrawals %>% 
+  mutate(
+         Date = my(paste(Month,"-",Year)))
+  #day = 1?
 
 #5 
+
+ggplot(df_withdrawals, aes(x=Date, y=Vector)) + 
+  geom_point() +
+  geom_line() +
+  geom_smooth(method="loess",se=FALSE) +
+  labs(title = paste("2022 Max daily withdrawals", Water_System_Name),
+       subtitle = Ownership, #confused on order
+       y="Withdrawal (mgd)", #fix unit
+       x="Date") #Line is not working
 
 ```
 
@@ -81,13 +150,61 @@ In the code chunk below scrape these values, assigning them to four separate var
 ```{r construct.a.scraping.function}
 #6. 
 
+scrape.it <- function(pwsid, the_year){
+  
+the_base_url <- 'https://www.ncwater.org/WUDC/app/LWSP/report.php?pwsid='
+the_scrape_url <- paste0(the_base_url, pwsid, '&year=', the_year)
+#print(the_scrape_url)
 
+#Retrieve the website contents 
+the_website <- read_html(the_scrape_url)
+
+#Set the element address variables (determined in the previous step)
+Water_System_Name <- 'div+ table tr:nth-child(1) td:nth-child(2)'
+PWSID <- "td tr:nth-child(1) td:nth-child(5)"
+Ownership <- "div+ table tr:nth-child(2) td:nth-child(4)"
+Vector <- "th~ td+ td"
+Month <- ".fancy-table:nth-child(31) tr+ tr th"
+
+#Scrape the data items
+Water_System_Name <- the_website %>% html_nodes(Water_System_Name) %>% html_text()
+PWSID <- the_website %>% html_nodes(PWSID) %>%  html_text()
+Ownership <- the_website %>% html_nodes(Ownership) %>% html_text()
+Vector <- the_website %>% html_nodes(Vector) %>% html_text()
+Month <- the_website %>% html_nodes(Month) %>% html_text()
+
+#Construct a dataframe from the scraped data
+df_withdrawals <- data.frame("Month" = Month,
+                             "Year" = the_year, #is this right
+                             "PWSID" = PWSID,
+                             "Water_System_Name" = Water_System_Name,
+                             "Ownership" = Ownership,
+                             "Vector" = Vector) 
+
+df_withdrawals <- df_withdrawals %>% 
+  mutate(
+         Date = my(paste(Month,"-",Year)))
+
+  return(df_withdrawals)
+
+}
 ```
 
 7. Use the function above to extract and plot max daily withdrawals for Durham (PWSID='03-32-010') for each month in 2015
 
 ```{r fetch.and.plot.Durham.2015.data}
 #7 
+NewSet <-scrape.it("03-32-010", 2015) 
+
+#Plot 
+ggplot(NewSet, aes(x=Date, y=Vector)) + 
+  geom_point() +
+  geom_line() +
+  geom_smooth(method="loess",se=FALSE) +
+  labs(title = paste(the_year,"Max daily withdrawals", Water_System_Name),
+       subtitle = Ownership, #confused on order
+       y="Withdrawal (mgd)", #fix unit
+       x="Date") #Line is not working
 
 
 ```
@@ -96,6 +213,24 @@ In the code chunk below scrape these values, assigning them to four separate var
 
 ```{r fetch.and.plot.Asheville.2015.data}
 #8 
+NewSet <-scrape.it("03-32-010", 2015) 
+view(NewSet)
+Asheville <-scrape.it("01-11-010", 2015)  #is this combining the data
+
+
+ggplot() + 
+  geom_point(NewSet, mapping = aes(x=Date, y=Vector), color = 'blue') +
+  geom_line(NewSet, mapping = aes(x=Date, y=Vector), color = "blue") +
+  geom_point(Asheville, mapping = aes(x=Date, y=Vector), color = 'green') +
+  geom_line(Asheville, mapping = aes(x=Date, y=Vector), color = "green") +
+  geom_smooth(method="loess",se=FALSE, color = "darkblue") +
+  geom_smooth(method="loess",se=FALSE, color = "darkgreen") +
+  labs(title = paste(the_year,"Max daily withdrawals from ", Asheville$Water_System_Name, " and ", NewSet$Water_System_Name),
+       subtitle = paste(Asheville$Water_System_Name, " & ", NewSet$Water_System_Name), #confused on order
+       y="Withdrawal (mgd)", #fix unit
+       x="Date") #Line is not working
+
+
 
 
 ```
