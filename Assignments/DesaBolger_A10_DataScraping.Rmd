@@ -165,7 +165,8 @@ Ownership <- "div+ table tr:nth-child(2) td:nth-child(4)"
 Vector <- "th~ td+ td"
 
 #Scrape the data items
-Water_System_Name <- the_website %>% html_nodes(Water_System_Name) %>% html_text()
+Water_System_Name <- 
+  the_website %>% html_nodes(Water_System_Name) %>% html_text()
 PWSID <- the_website %>% html_nodes(PWSID) %>%  html_text()
 Ownership <- the_website %>% html_nodes(Ownership) %>% html_text()
 Vector <- the_website %>% html_nodes(Vector) %>% html_text()
@@ -187,17 +188,8 @@ df_withdrawals <- df_withdrawals %>%
 df_withdrawals <- df_withdrawals[order(as.Date(df_withdrawals$Date, 
                                                format="%Y/%m/%d")),]
 df_withdrawals$Vector <- as.numeric(df_withdrawals$Vector)
-
-plotting <- ggplot(df_withdrawals, aes(x=Date, y=Vector)) + 
-  geom_point() +
-  geom_path(group =1) +
-  labs(title = paste(the_year,"Max Daily Withdrawals", Water_System_Name),
-       subtitle = Ownership, 
-       y="Max Daily Use (MGD)",
-       x="Date") 
   Sys.sleep(1) 
 
-print(plotting)
   return(df_withdrawals)
 
 }
@@ -208,6 +200,16 @@ print(plotting)
 ```{r fetch.and.plot.Durham.2015.data}
 #7 
 NewSet <-scrape.it("03-32-010", 2015) 
+
+plotting <- ggplot(NewSet, aes(x=Date, y=Vector)) + 
+  geom_point() +
+  geom_path(group =1) +
+  labs(title = paste("2015 Max Daily Withdrawals", Water_System_Name),
+       subtitle = Ownership, 
+       y="Max Daily Use (MGD)",
+       x="Date") 
+
+print(plotting)
 ```
 
 8. Use the function above to extract data for Asheville (PWSID = 01-11-010) in 2015. Combine this data with the Durham data collected above and create a plot that compares Asheville's to Durham's water withdrawals.
@@ -235,7 +237,6 @@ ggplot() +
   "(Green)"),
        y="Max Daily Use (MGD)",
        x="Date")
-#add legend
 
 
 
@@ -256,7 +257,7 @@ pwsid = "01-11-010"
 the_year<- rep(2010:2021)
 
 pwsid <-  rep.int("01-11-010", length(the_year))
-print(pwsid)
+#print(pwsid)
 
 #"Map" the "scrape.it" function to retrieve data for all these
 dfs_2020 <- map2(pwsid, the_year, scrape.it) 
@@ -269,8 +270,7 @@ df_2020 <- bind_rows(dfs_2020)
 ggplot(df_2020,aes(y = Vector, x=Date)) +
   geom_path(group = 1)+
     geom_smooth(method="loess",se=FALSE) +
-  labs(title = paste(Asheville$Year, "Max Daily Withdrawals from", 
-  Asheville$Water_System_Name),
+  labs(title = paste("Asheville's Max Daily Withdrawals"),
        y="Max Daily Use (MGD)",
        x="Year")
   
